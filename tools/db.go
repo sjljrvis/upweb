@@ -1,8 +1,8 @@
 package db
 
 import (
-	mgo "gopkg.in/mgo.v2"
 	"github.com/sjljrvis/deploynow/log"
+	mgo "gopkg.in/mgo.v2"
 )
 
 //MongoDB -Connecting to DB
@@ -17,19 +17,33 @@ func MongoConnect(mongoURI, dbName string) {
 	} else {
 		MongoDB = session.DB(dbName)
 		log.Info().Msgf("Connected to mongo :" + dbName)
-
 		log.Info().Msgf("loading Indexes - started")
-  	MongoDB.C("user").EnsureIndex(userModelIndex())
+		loadIndexes()
 		log.Info().Msgf("loading Indexes -finished")
 	}
 }
 
+func loadIndexes() {
+	MongoDB.C("user").EnsureIndex(userModelIndex())
+	MongoDB.C("repository").EnsureIndex(userModelIndex())
+}
+
 func userModelIndex() mgo.Index {
-  return mgo.Index{
-    Key:        []string{"userName" , "email"},
-    Unique:     true,
-    DropDups:   true,
-    Background: true,
-    Sparse:     true,
-  }
+	return mgo.Index{
+		Key:        []string{"userName", "email"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+}
+
+func repositoryModelIndex() mgo.Index {
+	return mgo.Index{
+		Key:        []string{"repositoryName"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
 }
