@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
 	"github.com/gorilla/mux"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	UserModel "github.com/sjljrvis/deploynow/models/user"
@@ -14,7 +15,7 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 	var results []UserModel.User
 	results, err := UserModel.FindAll()
 	if err != nil {
-		Helper.RespondWithError(w, 200, err.Error()) // TODO: Do something about the error
+		Helper.RespondWithError(w, 200, err.Error())
 	} else {
 		Helper.RespondWithJSON(w, 200, results)
 	}
@@ -25,7 +26,7 @@ func GetOne(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	result, err := UserModel.FindOneByID(params["id"])
 	if err != nil {
-		Helper.RespondWithError(w, 200, err.Error()) // TODO: Do something about the error
+		Helper.RespondWithError(w, 200, err.Error())
 	} else {
 		Helper.RespondWithJSON(w, 200, result)
 	}
@@ -41,11 +42,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user.ID = bson.NewObjectId()
-	hashed , _ := Helper.HashPassword(user.Password)
+	hashed, _ := Helper.HashPassword(user.Password)
 	user.Password = hashed
 	err := UserModel.Create(user)
 	if err != nil {
-		Helper.RespondWithError(w, 200, err.Error()) // TODO: Do something about the error
+		Helper.RespondWithError(w, 200, err.Error())
 	} else {
 		Helper.RespondWithJSON(w, 200, map[string]string{"message": "User Created successfully"})
 	}
@@ -65,7 +66,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	result, err := UserModel.FindByQuery(query)
 	if err != nil {
-		Helper.RespondWithError(w, 200, err.Error()) // TODO: Do something about the error
+		Helper.RespondWithError(w, 200, err.Error())
 	} else {
 		Helper.RespondWithJSON(w, 200, result)
 	}
