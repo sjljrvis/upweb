@@ -5,7 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-
+	"github.com/sjljrvis/deploynow/models"
 )
 
 var DB *gorm.DB
@@ -27,6 +27,6 @@ func Init() {
 		panic("failed to connect database")
 	}
 	defer db.Close()
-	// db.AutoMigrate(&Resource{})
+	db.AutoMigrate(&Repo{})
 	DB = db
 }
