@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/sjljrvis/deploynow/log"
 	"github.com/sjljrvis/deploynow/router"
-	tool "github.com/sjljrvis/deploynow/tools"
+	DB "github.com/sjljrvis/deploynow/db"
 )
 
 func init() {
@@ -14,8 +14,7 @@ func init() {
 }
 
 func main() {
-	// tool.MongoConnect("mongodb://sejal:sejal@ds117935.mlab.com:17935/mobystore", "mobystore")
-	tool.Init()
+	DB.Init()
 	r := router.NewRouter()
 
 	corsObj := handlers.AllowedOrigins([]string{"*"})
