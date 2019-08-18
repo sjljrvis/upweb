@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  postgres:
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=dnow
+      - POSTGRES_PASSWORD=dnow
+      - POSTGRES_DB=dnow
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
