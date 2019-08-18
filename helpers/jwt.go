@@ -5,16 +5,16 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/satori/go.uuid"
 )
 
 var mySigningKey = []byte("captainjacksparrowsayshi")
 
 // GenerateJWT will issue JWT token
-func GenerateJWT(_id bson.ObjectId, email string) (string, error) {
+func GenerateJWT(uuid uuid.UUID, email string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["_id"] = _id
+	claims["uuid"] = uuid
 	claims["email"] = email
 	claims["exp"] = time.Now().Add(time.Hour * 24 * 30).Unix()
 	tokenString, err := token.SignedString(mySigningKey)

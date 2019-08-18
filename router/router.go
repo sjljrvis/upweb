@@ -5,9 +5,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	// AuthController "github.com/sjljrvis/deploynow/controllers/auth"
+	AuthController "github.com/sjljrvis/deploynow/controllers/auth"
 	RepositoryController "github.com/sjljrvis/deploynow/controllers/repository"
-	// UserController "github.com/sjljrvis/deploynow/controllers/user"
+	UserController "github.com/sjljrvis/deploynow/controllers/user"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 )
 
@@ -24,19 +24,19 @@ func NewRouter() *mux.Router {
 		handle  REST-api /user here
 	*/
 
-	// authRouter := r.PathPrefix("/api/v1/auth").Subrouter()
-	// authRouter.HandleFunc("/login", AuthController.Login).Methods("POST")
-	// authRouter.HandleFunc("/register", AuthController.Register).Methods("POST")
+	authRouter := r.PathPrefix("/api/v1/auth").Subrouter()
+	authRouter.HandleFunc("/login", AuthController.Login).Methods("POST")
+	authRouter.HandleFunc("/register", AuthController.Register).Methods("POST")
 
 	/*
 		user subrouter
 		handle  REST-api /user here
 	*/
 
-	// userRouter := r.PathPrefix("/api/v1/user").Subrouter()
-	// userRouter.HandleFunc("/", UserController.GetAll).Methods("GET")
-	// userRouter.HandleFunc("/{id}", UserController.GetOne).Methods("GET")
-	// userRouter.HandleFunc("/", UserController.Create).Methods("POST")
+	userRouter := r.PathPrefix("/api/v1/user").Subrouter()
+	userRouter.HandleFunc("/", UserController.GetAll).Methods("GET")
+	userRouter.HandleFunc("/{id}", UserController.Get).Methods("GET")
+	userRouter.HandleFunc("/", UserController.Create).Methods("POST")
 	// userRouter.HandleFunc("/search/", UserController.Search).Methods("GET")
 
 	/*
