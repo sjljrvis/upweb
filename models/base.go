@@ -7,6 +7,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+//Base struct to be used for all the dnow models
 type Base struct {
 	ID					uint		`gorm:"primary_key" json:"id"`
 	UUID       	uuid.UUID `gorm:"type:uuid" json:"uuid"`

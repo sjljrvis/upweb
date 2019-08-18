@@ -77,23 +77,3 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	Helper.RespondWithJSON(w, http.StatusOK, nil)
 }
-
-// // Search controller
-// func Search(w http.ResponseWriter, r *http.Request) {
-
-// 	var query map[string]interface{}
-// 	query = make(map[string]interface{})
-
-// 	keys := r.URL.Query()
-
-// 	for item := range keys {
-// 		query[item] = keys[item][0]
-// 	}
-
-// 	result, err := RepositoryModel.FindByQuery(query)
-// 	if err != nil {
-// 		Helper.RespondWithError(w, 200, err.Error())
-// 	} else {
-// 		Helper.RespondWithJSON(w, 200, result)
-// 	}
-// }
