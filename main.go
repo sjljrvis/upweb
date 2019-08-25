@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/handlers"
+	DB "github.com/sjljrvis/deploynow/db"
 	"github.com/sjljrvis/deploynow/log"
 	"github.com/sjljrvis/deploynow/router"
-	DB "github.com/sjljrvis/deploynow/db"
 )
 
 func init() {

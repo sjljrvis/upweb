@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	// "github.com/gorilla/mux"
+	. "github.com/sjljrvis/deploynow/db"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	models "github.com/sjljrvis/deploynow/models"
-	."github.com/sjljrvis/deploynow/db" 
 )
 
 type auth struct {
@@ -18,7 +18,7 @@ type auth struct {
 //Login controller
 func Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	
+
 	var authData auth
 	if err := json.NewDecoder(r.Body).Decode(&authData); err != nil {
 		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
