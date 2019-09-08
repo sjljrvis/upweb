@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	. "github.com/sjljrvis/deploynow/db"
 	Helper "github.com/sjljrvis/deploynow/helpers"
+
+	"github.com/sjljrvis/deploynow/models"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -25,7 +28,10 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 					return
 				}
 				if token.Valid {
-					ctx := context.WithValue(req.Context(), "decoded", token.Claims)
+					claims := token.Claims.(jwt.MapClaims)
+					user := models.User{}
+					DB.Where("uuid = ?", claims["uuid"]).First(&user)
+					ctx := context.WithValue(req.Context(), "user", user)
 					next(w, req.WithContext(ctx))
 				} else {
 					Helper.RespondWithError(w, 403, "Authorization Invalid")

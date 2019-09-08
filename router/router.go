@@ -37,6 +37,8 @@ func NewRouter() *mux.Router {
 	userRouter.HandleFunc("/", UserController.GetAll).Methods("GET")
 	userRouter.HandleFunc("/{id}", UserController.Get).Methods("GET")
 	userRouter.HandleFunc("/", UserController.Create).Methods("POST")
+	userRouter.HandleFunc("/{id}", UserController.Delete).Methods("DELETE")
+
 	// userRouter.HandleFunc("/search/", UserController.Search).Methods("GET")
 
 	/*
@@ -46,11 +48,11 @@ func NewRouter() *mux.Router {
 
 	repositoryRouter := r.PathPrefix("/api/v1/repository").Subrouter()
 	// repositoryRouter.Use(AuthMiddleware)
-	repositoryRouter.HandleFunc("/", RepositoryController.GetAll).Methods("GET")
-	repositoryRouter.HandleFunc("/{id}", RepositoryController.Get).Methods("GET")
-	repositoryRouter.HandleFunc("/", RepositoryController.Create).Methods("POST")
-	repositoryRouter.HandleFunc("/{id}", RepositoryController.Update).Methods("PUT")
-	repositoryRouter.HandleFunc("/{id}", RepositoryController.Delete).Methods("DELETE")
+	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.GetAll)).Methods("GET")
+	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Get)).Methods("GET")
+	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.Create)).Methods("POST")
+	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
+	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
 
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	return r
