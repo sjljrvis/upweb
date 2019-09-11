@@ -16,6 +16,7 @@ func init() {
 }
 
 func main() {
+
 	DB.Init()
 	r := router.NewRouter()
 	corsObj := handlers.AllowedOrigins([]string{"*"})

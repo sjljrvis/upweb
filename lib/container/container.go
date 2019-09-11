@@ -3,6 +3,7 @@ package lib
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -15,13 +16,14 @@ import (
 func GenerateDefault() {
 
 	port, err := freeport.GetFreePort()
+	fmt.Println("Port", port)
 	if err != nil {
 		log.Error().Msgf("Error Occured in generating default container")
 	}
 	imageName := "dnow-default"
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
-		HostPort: string(port),
+		HostPort: strconv.Itoa(port),
 	}
 	portBinding := nat.PortMap{
 		nat.Port("80/tcp"): []nat.PortBinding{hostBinding},
@@ -42,12 +44,10 @@ func GenerateDefault() {
 	if err != nil {
 		log.Error().Msgf("Unable to create docker client")
 	}
-	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, "dnow-default-1")
-	fmt.Println(err)
+	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, "dnow-2")
+
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
-		fmt.Println("------")
-		fmt.Println(err)
-		log.Error().Msgf("Unable to start docker container")
+		log.Error().Msgf("Unable to start docker container", err.Error())
 	}
 
 	fmt.Println(_container.ID)

@@ -1,0 +1,25 @@
+package: github.com/sjljrvis/deploynow
+import:
+- package: github.com/dgrijalva/jwt-go
+- package: github.com/docker/docker
+  subpackages:
+  - api/types
+  - api/types/container
+  - client
+- package: github.com/docker/go-connections
+  subpackages:
+  - nat
+- package: github.com/gorilla/handlers
+- package: github.com/gorilla/mux
+- package: github.com/jinzhu/gorm
+  subpackages:
+  - dialects/postgres
+- package: github.com/phayes/freeport
+- package: github.com/rs/zerolog
+- package: github.com/satori/go.uuid
+- package: github.com/subosito/gotenv
+- package: golang.org/x/crypto
+  subpackages:
+  - bcrypt
+  - ssh/terminal
+- package: gopkg.in/src-d/go-git.v4
