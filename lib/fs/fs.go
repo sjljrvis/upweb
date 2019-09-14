@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"os/user"
 	"path"
 	"runtime"
@@ -20,7 +21,7 @@ func CreateDir(path string) error {
 	if err != nil {
 		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
 	}
-	Chown(path, "www-data")
+	ChownR(path)
 	return nil
 }
 
@@ -34,6 +35,13 @@ func Chown(path, group string) {
 		gid, _ := strconv.Atoi(group.Gid)
 
 		err = syscall.Chown(path, uid, gid)
+	}
+}
+
+func ChownR(path string) {
+	if runtime.GOOS != "darwin" {
+		cmd := exec.Command("chown www-data:www-data", "-R", path)
+		cmd.Run()
 	}
 }
 

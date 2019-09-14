@@ -17,7 +17,7 @@ func InitBare(path string) error {
 		log.Info().Msgf("Error in Creating Bare repository")
 		return err
 	}
-	fs.Chown(path, "www-data")
+	fs.ChownR(path)
 	return nil
 }
 
@@ -27,7 +27,7 @@ func CreateHooks(path string) error {
 	if err != nil {
 		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
 	}
-	fs.Chown(path, "www-data")
+	fs.ChownR(path + "/hooks")
 	// err = fs.Copy("/Users/sejal/Projects/Personal/go/src/github.com/sjljrvis/deploynow/.githooks/pre-receive", path+"/hooks")
 	// err = fs.Copy("/Users/sejal/Projects/Personal/go/src/github.com/sjljrvis/deploynow/.githooks/post-receive", path+"/hooks")
 	return nil
