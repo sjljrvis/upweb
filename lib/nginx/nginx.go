@@ -3,11 +3,10 @@ package lib
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 
-	Helper "github.com/sjljrvis/deploynow/helpers"
+	"github.com/sjljrvis/deploynow/log"
 )
 
 func getConfig(name string, port string) string {
@@ -34,12 +33,14 @@ func symlink(name string) error {
 }
 
 //Reload reloads nginx
-func Reload() {
+func Reload() error {
 	cmd := exec.Command("sudo", "service", "nginx", "reload")
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
+		log.Error().Err(err)
+		return err
 	}
+	return nil
 }
 
 // WriteConfig Creates ginx config
@@ -53,7 +54,7 @@ func WriteConfig(name string, port string) {
 
 //Writehtpasswd secures directory with http password
 func Writehtpasswd(path, username, password string) error {
-	text := username + `:` + Helper.GetMD5Hash(password)
+	text := username + `:` + password
 	err := ioutil.WriteFile(path, []byte(text), 0777)
 	if err != nil {
 		return err

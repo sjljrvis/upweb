@@ -7,6 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	container "github.com/sjljrvis/deploynow/lib/container"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
 )
@@ -45,6 +46,7 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	err = fs.CreateDir(repo.PathDocker)
 	err = git.InitBare(repo.Path)
 	err = git.CreateHooks(repo.Path)
+	container.GenerateDefault()
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}

@@ -3,6 +3,7 @@ package lib
 import (
 	"fmt"
 	"os"
+	"path"
 
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	"github.com/sjljrvis/deploynow/log"
@@ -22,13 +23,13 @@ func InitBare(path string) error {
 }
 
 // CreateHooks will initialize bare respository
-func CreateHooks(path string) error {
-	err := os.MkdirAll(path+"/hooks", os.FileMode(0775))
+func CreateHooks(dir string) error {
+	err := os.MkdirAll(dir+"/hooks", os.FileMode(0775))
 	if err != nil {
 		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
 	}
-	fs.ChownR(path + "/hooks")
-	// err = fs.Copy("/Users/sejal/Projects/Personal/go/src/github.com/sjljrvis/deploynow/.githooks/pre-receive", path+"/hooks")
-	// err = fs.Copy("/Users/sejal/Projects/Personal/go/src/github.com/sjljrvis/deploynow/.githooks/post-receive", path+"/hooks")
+	fs.ChownR(dir + "/hooks")
+	err = fs.Copy(path.Join(os.Getenv("PROJECT_DIR"), ".githooks", "pre-receive"), path.Join(dir, "hooks", "pre-receive"))
+	err = fs.Copy(path.Join(os.Getenv("PROJECT_DIR"), ".githooks", "post-receive"), path.Join(dir, "hooks", "post-receive"))
 	return nil
 }
