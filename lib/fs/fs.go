@@ -18,7 +18,7 @@ func CreateDir(path string) error {
 	if err != nil {
 		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
 	}
-	if runtime.GOOS == "darwin" {
+	if runtime.GOOS != "darwin" {
 		group, err := user.Lookup("www-data")
 		if err != nil {
 			return fmt.Errorf("error looking up postgres user user info")
