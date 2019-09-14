@@ -38,5 +38,5 @@ func (user *User) AfterCreate(scope *gorm.Scope) (err error) {
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
-	return scope.SetColumn("State", "stopped")
+	return nil
 }
