@@ -40,7 +40,7 @@ func Chown(path, group string) {
 
 func ChownR(path string) {
 	if runtime.GOOS != "darwin" {
-		cmd := exec.Command("chown www-data:www-data", "-R", path)
+		cmd := exec.Command("chown", "www-data:www-data", "-R", path)
 		cmd.Run()
 	}
 }
