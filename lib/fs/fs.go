@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"strconv"
 	"syscall"
+
+	"github.com/sjljrvis/deploynow/log"
 )
 
 //CreateDir will create dir with group
@@ -18,17 +20,21 @@ func CreateDir(path string) error {
 	if err != nil {
 		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
 	}
+	Chown(path, "www-data")
+	return nil
+}
+
+func Chown(path, group string) {
 	if runtime.GOOS != "darwin" {
-		group, err := user.Lookup("www-data")
+		group, err := user.Lookup(group)
 		if err != nil {
-			return fmt.Errorf("error looking up postgres user user info")
+			log.Info().Msgf(err.Error())
 		}
 		uid, _ := strconv.Atoi(group.Uid)
 		gid, _ := strconv.Atoi(group.Gid)
 
 		err = syscall.Chown(path, uid, gid)
 	}
-	return nil
 }
 
 // Copy file from src to destination

@@ -30,7 +30,11 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 				if token.Valid {
 					claims := token.Claims.(jwt.MapClaims)
 					user := models.User{}
-					DB.Where("uuid = ?", claims["uuid"]).First(&user)
+					err := DB.Where("uuid = ?", claims["uuid"]).First(&user).Error
+					if err != nil {
+						Helper.RespondWithError(w, 403, err.Error())
+						return
+					}
 					ctx := context.WithValue(req.Context(), "user", user)
 					next(w, req.WithContext(ctx))
 				} else {
