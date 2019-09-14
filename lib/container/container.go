@@ -13,6 +13,7 @@ import (
 	"github.com/sjljrvis/deploynow/log"
 )
 
+// GenerateDefault will spin up default container
 func GenerateDefault() {
 
 	port, err := freeport.GetFreePort()
@@ -49,8 +50,7 @@ func GenerateDefault() {
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
 		log.Error().Msgf("Unable to start docker container", err.Error())
 	}
-
-	fmt.Println(_container.ID)
+	log.Info().Msgf("Started container", _container.ID)
 }
 
 func Create(port int, env []string) {
