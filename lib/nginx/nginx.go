@@ -33,6 +33,7 @@ func symlink(name string) error {
 	return nil
 }
 
+//Reload reloads nginx
 func Reload() {
 	cmd := exec.Command("sudo", "service", "nginx", "reload")
 	err := cmd.Run()
@@ -41,14 +42,16 @@ func Reload() {
 	}
 }
 
+// WriteConfig Creates ginx config
 func WriteConfig(name string, port string) {
 	conf := []byte(getConfig(name, port))
-	err := ioutil.WriteFile("port.nginx.conf", conf, 0777)
+	err := ioutil.WriteFile(name+".nginx.conf", conf, 0777)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
+//Writehtpasswd secures directory with http password
 func Writehtpasswd(path, username, password string) error {
 	text := username + `:` + Helper.GetMD5Hash(password)
 	err := ioutil.WriteFile(path, []byte(text), 0777)

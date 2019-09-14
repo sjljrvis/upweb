@@ -38,6 +38,7 @@ func (repo *Repository) BeforeCreate(scope *gorm.Scope) (err error) {
 	1) Create bare repository
 	2) Add hook files
 	3) Lauch default container
+	4) Change owner ship to www-data
 */
 func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	err = fs.CreateDir(repo.Path)
