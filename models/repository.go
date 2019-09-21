@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/phayes/freeport"
 	container "github.com/sjljrvis/deploynow/lib/container"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
+	nginx "github.com/sjljrvis/deploynow/lib/nginx"
 )
 
 type Repository struct {
@@ -42,11 +45,14 @@ func (repo *Repository) BeforeCreate(scope *gorm.Scope) (err error) {
 	4) Change owner ship to www-data
 */
 func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
+	port, err := freeport.GetFreePort()
 	err = fs.CreateDir(repo.Path)
 	err = fs.CreateDir(repo.PathDocker)
 	err = git.InitBare(repo.Path)
 	err = git.CreateHooks(repo.Path)
-	container.GenerateDefault()
+	nginx.WriteConfig(repo.RepositoryName, strconv.Itoa(port))
+	nginx.Symlink(repo.RepositoryName)
+	container.GenerateDefault(repo.RepositoryName, port)
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
