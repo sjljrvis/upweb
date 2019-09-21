@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 
 	"github.com/sjljrvis/deploynow/log"
 )
@@ -24,8 +25,10 @@ func getConfig(name string, port string) string {
 	return conf
 }
 
-func symlink(name string) error {
-	err := os.Symlink(name, "sites_enabled/name")
+func Symlink(name string) error {
+	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".toctsack.com")
+	sitesEnabled := path.Join(os.Getenv("NGINX_SITES_ENABLED"), name+".toctsack.com")
+	err := os.Symlink(confPath, sitesEnabled)
 	if err != nil {
 		return err
 	}
@@ -45,17 +48,19 @@ func Reload() error {
 
 // WriteConfig Creates ginx config
 func WriteConfig(name string, port string) {
+	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".toctsack.com")
 	conf := []byte(getConfig(name, port))
-	err := ioutil.WriteFile(name+".nginx.conf", conf, 0777)
+	err := ioutil.WriteFile(confPath, conf, 0777)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 //Writehtpasswd secures directory with http password
-func Writehtpasswd(path, username, password string) error {
+func Writehtpasswd(username, password string) error {
+	_path := path.Join(os.Getenv("ROOT_DIR"), username, "htpasswd")
 	text := username + `:` + password
-	err := ioutil.WriteFile(path, []byte(text), 0777)
+	err := ioutil.WriteFile(_path, []byte(text), 0777)
 	if err != nil {
 		return err
 	}

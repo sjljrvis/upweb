@@ -9,18 +9,11 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/phayes/freeport"
 	"github.com/sjljrvis/deploynow/log"
 )
 
 // GenerateDefault will spin up default container
-func GenerateDefault() {
-
-	port, err := freeport.GetFreePort()
-	fmt.Println("Port", port)
-	if err != nil {
-		log.Error().Msgf("Error Occured in generating default container")
-	}
+func GenerateDefault(name string, port int) {
 	imageName := "dnow-default"
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
@@ -45,7 +38,7 @@ func GenerateDefault() {
 	if err != nil {
 		log.Error().Msgf("Unable to create docker client")
 	}
-	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, "dnow-2")
+	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, name+"_default")
 
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
 		log.Error().Msgf("Unable to start docker container", err.Error())
