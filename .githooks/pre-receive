@@ -1,2 +1,79 @@
 #!/usr/bin/env node
-console.log("Receiving pre commit")
+
+/*
+* NPM Dependecies
+*/
+const readline = require('readline');
+const { exec } = require('child_process');
+
+/*
+* PATHS and variables
+*/
+
+const zeroCommit = '0000000000000000000000000000000000000000';
+
+
+let excludeExisting = "--not --all";
+
+
+/** 
+ * Functions to parse git
+*/
+
+const parseCommitsAndVerify = (commits, callback) => {
+  let allFiles = [];
+  commits.map((x, index) => {
+    exec(`git log -1 --name-only --pretty=format:'' ${x}`, (err, stderr, stdout) => {
+      let files = stderr.split("\n");
+      allFiles = allFiles.concat(files);
+      if (index == commits.length - 1) {
+        allFiles = Array.from(new Set(allFiles)).filter(x => x != '')
+        return callback(null, allFiles)
+      }
+    })
+  })
+}
+
+
+const getCommits = (oldRef, newRef, excludeExisting) => {
+  let gitCommand;
+  if (oldRef) {
+    gitCommand = `git rev-list ${oldRef}..${newRef} ${excludeExisting}`;
+  } else {
+    gitCommand = `git rev-list ${newRef} ${excludeExisting}`;
+  }
+  exec(gitCommand, (err, stderr, stdout) => {
+    commits = stderr.split('\n').filter(x => x != '');
+    parseCommitsAndVerify(commits, (err, files) => {
+      process.exit(0);
+    })
+  })
+}
+
+/** 
+ * Main REPL
+*/
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+
+rl.on('line', (input) => {
+  let repoInfo = input.split(' ');
+  let oldRef = repoInfo[0];
+  let newRef = repoInfo[1];
+  let refName = repoInfo[2];
+  let commits = [];
+
+  if (newRef == zeroCommit) {
+  }
+
+  if (oldRef == zeroCommit) {
+    getCommits(null, newRef, excludeExisting)
+  }
+  else {
+    getCommits(oldRef, newRef, excludeExisting)
+  }
+});
