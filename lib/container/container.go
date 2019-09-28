@@ -2,7 +2,8 @@ package lib
 
 import (
 	"context"
-	"fmt"
+	"os"
+	"os/exec"
 	"strconv"
 
 	"github.com/docker/docker/api/types"
@@ -38,7 +39,7 @@ func GenerateDefault(name string, port int) {
 	if err != nil {
 		log.Error().Msgf("Unable to create docker client")
 	}
-	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, name+"_default")
+	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, name)
 
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
 		log.Error().Msgf("Unable to start docker container", err.Error())
@@ -46,39 +47,40 @@ func GenerateDefault(name string, port int) {
 	log.Info().Msgf("Started container", _container.ID)
 }
 
-func Create(port int, env []string) {
+func Create(image string, port int) string {
 
-	imageName := "dnow-default"
+	portString := strconv.Itoa(port)
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
-		HostPort: string(port),
+		HostPort: portString,
 	}
-	containerPort, _ := nat.NewPort("tcp", "80")
-	portBinding := nat.PortMap{containerPort: []nat.PortBinding{hostBinding}}
+	portBinding := nat.PortMap{
+		nat.Port(portString + "/tcp"): []nat.PortBinding{hostBinding},
+	}
 
 	containerConfig := &container.Config{
-		Image: imageName,
+		Image: image,
 		ExposedPorts: nat.PortSet{
-			nat.Port("80/tcp"): {},
+			nat.Port(portString + "/tcp"): struct{}{},
 		},
+		Env: []string{"PORT=" + portString},
 	}
 
 	hostConfig := &container.HostConfig{
 		PortBindings: portBinding,
 	}
 
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		log.Error().Msgf("Unable to create docker client")
 	}
-
-	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, "dnow-default-1")
+	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, image)
 
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
-		log.Error().Msgf("Unable to start docker container")
+		log.Error().Msgf("Unable to start docker container", err.Error())
 	}
-
-	fmt.Println(_container.ID)
+	log.Info().Msgf("Started container %s", _container.ID)
+	return _container.ID
 }
 
 func Stop(containerID string) {
@@ -91,5 +93,28 @@ func Stop(containerID string) {
 	if err := cli.ContainerStop(ctx, containerID, nil); err != nil {
 		panic(err)
 	}
-	fmt.Println("Success")
+	log.Info().Msgf("Stopping container ... done")
+}
+
+func Remove(containerID string) {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		panic(err)
+	}
+	log.Info().Msgf("Removing container ... ")
+	if err := cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{}); err != nil {
+		panic(err)
+	}
+	log.Info().Msgf("Removing container ... done")
+}
+
+func BuildImage(path, name string) {
+	cmd := exec.Command("docker", "build", path, "-t", name)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Info().Err(err)
+	}
 }
