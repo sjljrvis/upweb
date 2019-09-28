@@ -6,7 +6,9 @@ import (
 	"github.com/gorilla/mux"
 
 	AuthController "github.com/sjljrvis/deploynow/controllers/auth"
+	ContainerController "github.com/sjljrvis/deploynow/controllers/containers"
 	RepositoryController "github.com/sjljrvis/deploynow/controllers/repository"
+
 	UserController "github.com/sjljrvis/deploynow/controllers/user"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 )
@@ -53,6 +55,15 @@ func NewRouter() *mux.Router {
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.Create)).Methods("POST")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
+
+	/*
+		container subrouter
+		handle  REST-api /user here
+	*/
+
+	containerRouter := r.PathPrefix("/api/v1/container").Subrouter()
+	// repositoryRouter.Use(AuthMiddleware)
+	containerRouter.HandleFunc("/build", ContainerController.Build).Methods("POST")
 
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	return r

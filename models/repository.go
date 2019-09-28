@@ -22,9 +22,10 @@ type Repository struct {
 	Path           string `json:"path"`
 	PathDocker     string `json:"path_docker"`
 	Description    string `json:"description"`
-	State          string `json:"state" default:"stopped"`
+	State          string `json:"state" gorm:"default:'stopped'`
 	UserID         uint   `json:"user_id"`
 	UserName       string `json::"user_name"`
+	ContainerID    string `json::"container_id" gorm:"default:'0'`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
@@ -56,5 +57,6 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
-	return scope.SetColumn("State", "stopped")
+	scope.SetColumn("State", "stopped")
+	return
 }
