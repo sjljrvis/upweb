@@ -29,7 +29,6 @@ func Build(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	var buildData build
-
 	if err := json.NewDecoder(r.Body).Decode(&buildData); err != nil {
 		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
