@@ -18,7 +18,7 @@ type User struct {
 	Email        string `gorm:"unique" json:"email"`
 	Password     string `json:"password"`
 	MD5          string `json:"password_md5"`
-	Repositories Repository
+	Repositories []Repository
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
