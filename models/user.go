@@ -47,3 +47,13 @@ func (user *User) AfterCreate(scope *gorm.Scope) (err error) {
 	}
 	return nil
 }
+
+func (user *User) BeforeDelete(scope *gorm.Scope) (err error) {
+	scope.DB().Where("user_id = ?", user.ID).Delete(Repository{})
+	return nil
+}
+
+func (user *User) AfterDelete(scope *gorm.Scope) (err error) {
+	fmt.Println("Deleting Object")
+	return
+}

@@ -18,7 +18,7 @@ func Init() {
 		fmt.Println(err)
 		panic("failed to connect database")
 	}
-	// defer db.Close()
+	db.LogMode(true)
 	db.AutoMigrate(&Repository{}, &User{}, &Variable{})
 	DB = db
 }

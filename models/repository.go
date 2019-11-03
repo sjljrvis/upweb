@@ -9,7 +9,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/phayes/freeport"
-	container "github.com/sjljrvis/deploynow/lib/container"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
 	nginx "github.com/sjljrvis/deploynow/lib/nginx"
@@ -54,10 +53,15 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	err = git.CreateHooks(repo.Path)
 	nginx.WriteConfig(repo.RepositoryName, strconv.Itoa(port))
 	nginx.Symlink(repo.RepositoryName)
-	container.GenerateDefault(repo.RepositoryName, port)
+	// container.GenerateDefault(repo.RepositoryName, port)
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
 	scope.SetColumn("State", "stopped")
 	return
+}
+
+func (repository *Repository) BeforeDelete(scope *gorm.Scope) (err error) {
+	scope.DB().Where("user_id = ?", repository.ID).Delete(Variable{})
+	return nil
 }
