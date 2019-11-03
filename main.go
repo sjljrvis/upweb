@@ -2,11 +2,9 @@ package main
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/gorilla/handlers"
 	DB "github.com/sjljrvis/deploynow/db"
-	do "github.com/sjljrvis/deploynow/lib/digitalocean"
 	"github.com/sjljrvis/deploynow/log"
 	"github.com/sjljrvis/deploynow/router"
 	"github.com/subosito/gotenv"
@@ -20,10 +18,9 @@ func init() {
 func main() {
 
 	DB.Init()
-	do.CreateDNS("sejal")
 	r := router.NewRouter()
 	corsObj := handlers.AllowedOrigins([]string{"*"})
-	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+	r.Use(router.LoggingMiddleware)
 	http.Handle("/", handlers.CORS(corsObj)(r))
-	http.ListenAndServe(":3000", loggedRouter)
+	http.ListenAndServe(":3000", nil)
 }

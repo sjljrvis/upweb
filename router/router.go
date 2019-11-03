@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 
 	AuthController "github.com/sjljrvis/deploynow/controllers/auth"
+	BuildsController "github.com/sjljrvis/deploynow/controllers/builds"
 	ContainerController "github.com/sjljrvis/deploynow/controllers/containers"
 	RepositoryController "github.com/sjljrvis/deploynow/controllers/repository"
 	VariableController "github.com/sjljrvis/deploynow/controllers/variable"
@@ -67,6 +68,16 @@ func NewRouter() *mux.Router {
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.GetAll)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(VariableController.Get)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.Create)).Methods("POST")
+	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
+	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
+
+	/*
+		repository subrouter
+		handle  REST-api /user here
+	*/
+
+	buildsRouter := r.PathPrefix("/api/v1/build").Subrouter()
+	buildsRouter.HandleFunc("/{repository_id}", AuthMiddleware(BuildsController.GetAll)).Methods("GET")
 	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
 	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
 

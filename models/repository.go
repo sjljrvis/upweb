@@ -63,5 +63,6 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 
 func (repository *Repository) BeforeDelete(scope *gorm.Scope) (err error) {
 	scope.DB().Where("user_id = ?", repository.ID).Delete(Variable{})
+	scope.DB().Where("user_id = ?", repository.ID).Delete(Build{})
 	return nil
 }

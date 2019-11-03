@@ -22,6 +22,7 @@ import (
 type build struct {
 	BuildPack      string `json:"build_pack"`
 	RepositoryName string `json:"repository_name"`
+	CommitHash     string `json:"commit_hash"`
 }
 
 //Build controller
@@ -33,6 +34,7 @@ func Build(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	repository := models.Repository{}
 
 	if err := DB.First(&repository, models.Repository{RepositoryName: buildData.RepositoryName}).Error; err != nil {
@@ -40,7 +42,7 @@ func Build(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Info().Msgf("Building app async mode -> %s", buildData.RepositoryName)
-	go buildContainer(repository, buildData.BuildPack)
+	go buildContainer(repository, buildData.BuildPack, buildData.CommitHash)
 	Helper.RespondWithJSON(w, 200, map[string]string{"message": "build success"})
 
 }
@@ -68,7 +70,7 @@ func Rebuild(w http.ResponseWriter, r *http.Request) {
 /*
 * GO routines
  */
-func buildContainer(repository models.Repository, build_pack string) {
+func buildContainer(repository models.Repository, build_pack, commit_hash string) {
 	log.Info().Msgf("Starting go routine to build container")
 	port, err := freeport.GetFreePort()
 	if repository.ContainerID != "" {
@@ -89,5 +91,12 @@ func buildContainer(repository models.Repository, build_pack string) {
 	containerID := container.Create(repository.RepositoryName, port)
 	log.Info().Msgf("Building Docker Container ... done %s", containerID)
 	repository.ContainerID = containerID
+	build := models.Build{
+		CommitHash:   commit_hash,
+		UserName:     repository.UserName,
+		UserID:       repository.UserID,
+		RepositoryID: repository.ID,
+	}
 	DB.Save(repository)
+	DB.Create(&build)
 }

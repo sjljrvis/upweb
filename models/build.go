@@ -9,5 +9,5 @@ type Build struct {
 	CommitHash   string `json:"commit_hash"`
 	RepositoryID uint   `json:"repository_id"`
 	UserName     string `json:"user_name"`
-	email        string `json:"email"`
+	UserID       uint   `json:"user_id"`
 }
