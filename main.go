@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	DB "github.com/sjljrvis/deploynow/db"
@@ -22,7 +23,7 @@ func main() {
 	do.CreateDNS("sejal")
 	r := router.NewRouter()
 	corsObj := handlers.AllowedOrigins([]string{"*"})
-
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	http.Handle("/", handlers.CORS(corsObj)(r))
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", loggedRouter)
 }

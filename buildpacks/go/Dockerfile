@@ -1,8 +1,14 @@
-FROM mhart/alpine-node:8
+FROM golang:1.12
 
-WORKDIR /
+RUN go get github.com/Masterminds/glide
+
+WORKDIR /go/src/
+
+ADD glide.yaml glide.yaml
+ADD glide.lock glide.lock
+
+RUN glide install
 
 ADD . .
 
-RUN npm install
-CMD ["npm", "start"]
+CMD ["go", "run", "main.go"]
