@@ -82,6 +82,7 @@ func buildContainer(repository models.Repository, build_pack, commit_hash string
 	buildPackPath := path.Join(os.Getenv("PROJECT_DIR"), "buildpacks", build_pack, "Dockerfile")
 	projectDockerFile := path.Join(repository.PathDocker, "Dockerfile")
 	err = fs.Copy(buildPackPath, projectDockerFile)
+	err = fs.ReplaceStr(projectDockerFile, "dnow_replace_me", repository.RepositoryName)
 	fmt.Sprint(err)
 	log.Info().Msg("Building Docker image ... started")
 	container.BuildImage(repository.PathDocker, repository.RepositoryName)
