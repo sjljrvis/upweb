@@ -2,7 +2,7 @@ FROM golang:1.12
 
 RUN go get github.com/Masterminds/glide
 
-WORKDIR /go/src/
+WORKDIR /go/src/dnow_replace_me
 
 ADD glide.yaml glide.yaml
 ADD glide.lock glide.lock

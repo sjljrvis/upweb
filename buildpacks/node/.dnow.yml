@@ -1,2 +1,2 @@
-buildpack: "nodejs"
+buildpack: "node"
 command: "npm start"
