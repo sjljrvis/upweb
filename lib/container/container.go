@@ -75,9 +75,11 @@ func Create(image string, port int) string {
 		log.Error().Msgf("Unable to create docker client")
 	}
 	_container, err := cli.ContainerCreate(context.Background(), containerConfig, hostConfig, nil, image)
-
+	if err != nil {
+		log.Error().Msgf("Unable to create docker container %s", err.Error())
+	}
 	if err := cli.ContainerStart(context.Background(), _container.ID, types.ContainerStartOptions{}); err != nil {
-		log.Error().Msgf("Unable to start docker container", err.Error())
+		log.Error().Msgf("Unable to start docker container %s", err.Error())
 	}
 	log.Info().Msgf("Started container %s", _container.ID)
 	return _container.ID
