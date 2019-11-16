@@ -4,9 +4,11 @@
 * NPM Dependecies
 */
 const axios = require('../../../node_modules/axios');
+const YAML = require('../../../node_modules/yaml');
+const fs = require('fs');
 const { exec } = require('child_process');
 const readline = require('readline');
-const buildPack = "node"
+var buildPack = "default"
 
 /*
 * PATHS and variables
@@ -20,7 +22,7 @@ let repository_name = __dirname.trim().split('/')[12];
  * Fuctions
 */
 
-const triggerBuild = (commitHash,callback) => {
+const triggerBuild = (commitHash, callback) => {
   let options = {
     url: "http://localhost:3000/api/v1/container/build",
     method: "POST",
@@ -33,24 +35,31 @@ const triggerBuild = (commitHash,callback) => {
       commit_hash: commitHash
     }
   }
-  axios(options, (error, data) => {
-    console.log(error,data)
-    callback(null, true)
+  axios(options).then(res => {
+    callback(null, res.data);
   })
 }
 
-const checkoutTree = (commitHash) => {
+const checkForBuildFile = (callback) => {
+  const lookUpPath = `${projectPath}_docker/.dnow.yml`
+  const check = fs.existsSync(lookUpPath);
+  if (check){
+    const file = fs.readFileSync(lookUpPath, 'utf8')
+    buildPack = YAML.parse(file).buildpack
+    callback(true);
+  }
+}
+
+const checkoutTree = (commitHash, callback) => {
   exec(`GIT_WORK_TREE=${projectPath}_docker git checkout -f`, (err, stdout, stderr) => {
     if (err) {
       console.log("error in git-work-tree", err);
     }
     else {
-      triggerBuild(commitHash,(err, data) => {
-        console.log("-->  Files changed");
-        console.log("-->  Buildpack ", buildPack);
-        console.log("-->  Building app");
-        console.log(`Checkout your app ${repository_name}.tocstack.com`);
-        process.exit(0);
+      checkForBuildFile((res) => {
+        triggerBuild(commitHash, (err, data) => {
+          callback(null, true);
+        })
       })
     }
   })
@@ -69,5 +78,11 @@ const rl = readline.createInterface({
 rl.on('line', (input) => {
   let repoInfo = input.split(' ');
   let commitHash = repoInfo[1];
-  checkoutTree(commitHash)
+  checkoutTree(commitHash, (err, res) => {
+    console.log("-->  Files changed");
+    console.log("-->  Buildpack ", buildPack);
+    console.log("-->  Building app");
+    console.log(`Checkout your app ${repository_name}.tocstack.com`);
+    process.exit(0);
+  })
 });

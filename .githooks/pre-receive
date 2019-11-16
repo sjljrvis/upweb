@@ -45,6 +45,7 @@ const getCommits = (oldRef, newRef, excludeExisting) => {
   exec(gitCommand, (err, stderr, stdout) => {
     commits = stderr.split('\n').filter(x => x != '');
     parseCommitsAndVerify(commits, (err, files) => {
+      console.log(`-->    Commited ${files.length} files`)
       process.exit(0);
     })
   })
