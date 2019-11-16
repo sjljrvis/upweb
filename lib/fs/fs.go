@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -101,6 +102,20 @@ func DirCopy(src string, dst string) error {
 				fmt.Println(err)
 			}
 		}
+	}
+	return nil
+}
+
+func ReplaceStr(path, replace, text string) error {
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	output := bytes.Replace(input, []byte(replace), []byte(text), -1)
+
+	if err = ioutil.WriteFile(path, output, 0666); err != nil {
+		return err
 	}
 	return nil
 }
