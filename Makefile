@@ -8,7 +8,7 @@
 VENDOR_DIR="/root/deploynow-dependencies/vendor"
 
 run: clean
-	go run main.go
+	fresh -c dnow_runner.conf
 
 vendor: clean
 	@echo "\n -> Copying vendor dependencies -> started" 
