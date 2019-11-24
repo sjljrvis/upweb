@@ -19,6 +19,6 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	builds := []models.Build{}
-	DB.Find(&repository).Related(&builds)
+	DB.Limit(5).Find(&repository).Related(&builds)
 	Helper.RespondWithJSON(w, 200, builds)
 }
