@@ -126,7 +126,7 @@ func Logs(ctx context.Context, containerID string) (io.ReadCloser, error) {
 	log.Info().Msgf("Reading logs %s", containerID)
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		log.Error().Msgf("Unable read logs 2", err.Error())
+		log.Error().Msgf("Unable read logs", err.Error())
 	}
 	reader, err := cli.ContainerLogs(ctx, containerID, types.ContainerLogsOptions{
 		ShowStdout: true,
@@ -134,8 +134,4 @@ func Logs(ctx context.Context, containerID string) (io.ReadCloser, error) {
 		Timestamps: true,
 	})
 	return reader, err
-	// _, err = io.Copy(os.Stdout, reader)
-	// if err != nil && err != io.EOF {
-	// 	log.Error().Msgf("Unable to read logs", err.Error())
-	// }
 }
