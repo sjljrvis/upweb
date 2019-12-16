@@ -130,6 +130,7 @@ func Logs(ctx context.Context, containerID string) (io.ReadCloser, error) {
 	}
 	reader, err := cli.ContainerLogs(ctx, containerID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: true,
 		Follow:     true,
 		Timestamps: true,
 	})

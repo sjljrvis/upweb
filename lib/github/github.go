@@ -3,6 +3,6 @@ package lib
 type Github struct {
 }
 
-func GetAccessToken() {
+func User() {
 
 }

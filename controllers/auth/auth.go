@@ -54,3 +54,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	Helper.RespondWithJSON(w, http.StatusCreated, user)
 }
+
+// Register controller
+func GithubAuth(w http.ResponseWriter, r *http.Request) {
+	Helper.RespondWithJSON(w, http.StatusOK, r)
+}
