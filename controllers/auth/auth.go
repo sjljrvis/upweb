@@ -7,12 +7,17 @@ import (
 	// "github.com/gorilla/mux"
 	. "github.com/sjljrvis/deploynow/db"
 	Helper "github.com/sjljrvis/deploynow/helpers"
+	github "github.com/sjljrvis/deploynow/lib/github"
 	models "github.com/sjljrvis/deploynow/models"
 )
 
 type auth struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type githubAuth struct {
+	Code string `json:"code"`
 }
 
 //Login controller
@@ -57,5 +62,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 // Register controller
 func GithubAuth(w http.ResponseWriter, r *http.Request) {
-	Helper.RespondWithJSON(w, http.StatusOK, r)
+	defer r.Body.Close()
+	var githubAuthData githubAuth
+	if err := json.NewDecoder(r.Body).Decode(&githubAuthData); err != nil {
+		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	github.AccessToken(githubAuthData.Code, "")
+	Helper.RespondWithJSON(w, 200, map[string]string{"message": "login success"})
 }

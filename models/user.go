@@ -14,11 +14,12 @@ import (
 
 type User struct {
 	Base
-	UserName     string `gorm:"unique" json:"user_name"`
-	Email        string `gorm:"unique" json:"email"`
-	Password     string `json:"password"`
-	MD5          string `json:"password_md5"`
-	Repositories []Repository
+	UserName      string `gorm:"unique" json:"user_name"`
+	Email         string `gorm:"unique" json:"email"`
+	Password      string `json:"password"`
+	MD5           string `json:"password_md5"`
+	Repositories  []Repository
+	GithubAccount GithubAccount
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
