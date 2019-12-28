@@ -60,14 +60,25 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	Helper.RespondWithJSON(w, http.StatusCreated, user)
 }
 
-// Register controller
+// GithubAuth controller
 func GithubAuth(w http.ResponseWriter, r *http.Request) {
+	var githubAccount models.GithubAccount
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
 	defer r.Body.Close()
 	var githubAuthData githubAuth
 	if err := json.NewDecoder(r.Body).Decode(&githubAuthData); err != nil {
 		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	github.AccessToken(githubAuthData.Code, "")
-	Helper.RespondWithJSON(w, 200, map[string]string{"message": "login success"})
+	githubData := github.AccessToken(githubAuthData.Code, "")
+	profile := github.Profile(githubData.AccessToken)
+	json.Unmarshal(profile, &githubAccount)
+	githubAccount.AccessToken = githubData.AccessToken
+	githubAccount.UserID = user.ID
+	if err := DB.Save(&githubAccount).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	Helper.RespondWithJSON(w, 200, map[string]string{"message": "Connected github successfully"})
 }

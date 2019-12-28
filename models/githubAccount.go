@@ -6,10 +6,10 @@ import (
 
 type GithubAccount struct {
 	Base
+	UserID      uint   `gorm:"unique" json:"user_id"`
 	AccessToken string `gorm:"unique" json:"access_token"`
-	GID         string `gorm:"unique" json:"g_id"`
-	Login       string `json:"login"`
-	NodeId      string `json:"node_id"`
-	Url         string `json:"url"`
-	AvatarUrl   string `json:"avatar_url"`
+	Login       string `gorm:"unique" json:"login"`
+	NodeID      string `json:"node_id"`
+	URL         string `json:"url"`
+	AvatarURL   string `json:"avatar_url"`
 }

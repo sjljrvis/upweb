@@ -22,6 +22,5 @@ func (base *Base) BeforeCreate(scope *gorm.Scope) error {
 	if err != nil {
 		return err
 	}
-
 	return scope.SetColumn("UUID", uuid)
 }

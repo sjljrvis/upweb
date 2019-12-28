@@ -3,7 +3,6 @@ package lib
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -13,10 +12,10 @@ import (
 type accessToken struct {
 	AccessToken string `json:"access_token"`
 	Scope       string `json:"scope"`
-	// TokenType   string `json:"token_type"`
+	TokenType   string `json:"token_type"`
 }
 
-func AccessToken(code, state string) {
+func AccessToken(code, state string) accessToken {
 	var accessTokenData accessToken
 	data := map[string]interface{}{
 		"code":          code,
@@ -26,21 +25,38 @@ func AccessToken(code, state string) {
 		"redirect_uri":  "http://localhost:3001/#/oauth",
 	}
 	url := "https://github.com/login/oauth/access_token"
+
 	payload, err := json.Marshal(data)
-	log.Info().Msg("Calling github api--1")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Error().Msg(err.Error())
 	}
-	response, err := http.Post(url, "application/json", bytes.NewBuffer(payload))
-	defer response.Body.Close()
-	if err != nil {
-		fmt.Println(err)
-	}
-	body, err := ioutil.ReadAll(response.Body)
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
 	err = json.Unmarshal([]byte(body), &accessTokenData)
 	if err != nil {
-		fmt.Println(err)
+		log.Error().Msg(err.Error())
 	}
-	fmt.Println(accessTokenData)
-	fmt.Println(string(body))
+	return accessTokenData
+}
+
+func Profile(token string) []byte {
+	url := "https://api.github.com/user?access_token=" + token
+
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("Accept", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error().Msg(err.Error())
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body
 }

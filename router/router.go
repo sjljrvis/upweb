@@ -31,7 +31,7 @@ func NewRouter() *mux.Router {
 	authRouter := r.PathPrefix("/api/v1/auth").Subrouter()
 	authRouter.HandleFunc("/login", AuthController.Login).Methods("POST")
 	authRouter.HandleFunc("/register", AuthController.Register).Methods("POST")
-	authRouter.HandleFunc("/github/oauth", AuthController.GithubAuth).Methods("POST")
+	authRouter.HandleFunc("/github/oauth", AuthMiddleware(AuthController.GithubAuth)).Methods("POST")
 
 	/*
 		user subrouter
@@ -43,6 +43,7 @@ func NewRouter() *mux.Router {
 	userRouter.HandleFunc("/{id}", UserController.Get).Methods("GET")
 	userRouter.HandleFunc("/", UserController.Create).Methods("POST")
 	userRouter.HandleFunc("/{id}", UserController.Delete).Methods("DELETE")
+	userRouter.HandleFunc("/{id}", UserController.Update).Methods("PUT")
 
 	// userRouter.HandleFunc("/search/", UserController.Search).Methods("GET")
 

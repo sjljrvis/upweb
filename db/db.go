@@ -32,6 +32,6 @@ func Init() {
 	}
 	db.SetLogger(&GormLogger{})
 	db.LogMode(true)
-	db.AutoMigrate(&Repository{}, &User{}, &Variable{}, &Build{})
+	db.AutoMigrate(&Repository{}, &User{}, &Variable{}, &Build{}, &GithubAccount{})
 	DB = db
 }
