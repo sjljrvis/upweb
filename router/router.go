@@ -43,7 +43,7 @@ func NewRouter() *mux.Router {
 	userRouter.HandleFunc("/{id}", UserController.Get).Methods("GET")
 	userRouter.HandleFunc("/", UserController.Create).Methods("POST")
 	userRouter.HandleFunc("/{id}", UserController.Delete).Methods("DELETE")
-	userRouter.HandleFunc("/{id}", UserController.Update).Methods("PUT")
+	userRouter.HandleFunc("/{id}", AuthMiddleware(UserController.Update)).Methods("PUT")
 
 	// userRouter.HandleFunc("/search/", UserController.Search).Methods("GET")
 

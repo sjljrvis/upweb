@@ -45,20 +45,16 @@ func Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	user := models.User{}
-	if err := DB.First(&user, params["id"]).Error; err != nil {
-		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
-		return
-	}
+	defer r.Body.Close()
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
+	userObj := map[string]string{}
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
+	if err := decoder.Decode(&userObj); err != nil {
 		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	defer r.Body.Close()
-
-	if err := DB.Save(&user).Error; err != nil {
+	if err := DB.Model(user).Update(userObj).Error; err != nil {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
