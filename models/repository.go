@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/phayes/freeport"
+	uuid "github.com/satori/go.uuid"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
 	nginx "github.com/sjljrvis/deploynow/lib/nginx"
@@ -32,6 +33,8 @@ type Repository struct {
 func (repo *Repository) BeforeCreate(scope *gorm.Scope) (err error) {
 	repositoryPath := path.Join(os.Getenv("ROOT_DIR"), repo.UserName, repo.RepositoryName)
 	repositoryPathDocker := path.Join(os.Getenv("ROOT_DIR"), repo.UserName, repo.RepositoryName+"_docker")
+	uuid, _ := uuid.NewV4()
+	scope.SetColumn("UUID", uuid)
 	scope.SetColumn("Path", repositoryPath)
 	scope.SetColumn("PathDocker", repositoryPathDocker)
 	return

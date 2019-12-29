@@ -15,7 +15,7 @@ import (
 func InitBare(path string) error {
 	_, err := git.PlainInit(path, true)
 	if err != nil {
-		log.Info().Msgf("Error in Creating Bare repository")
+		log.Info().Msgf("Error in Creating Bare repository", err)
 		return err
 	}
 	fs.ChownR(path)
