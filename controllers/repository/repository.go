@@ -26,7 +26,10 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	user := ctx.Value("user").(models.User)
 	params := mux.Vars(r)
 	repository := models.Repository{}
-	err := DB.Where("user_id = ?", user.ID).First(&repository, params["id"]).Error
+	query := make(map[string]interface{})
+	query["user_id"] = user.ID
+	query["uuid"] = params["uuid"]
+	err := DB.Where(query).First(&repository).Error
 	if err != nil {
 		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
 		return
@@ -37,6 +40,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 func Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	user := ctx.Value("user").(models.User)
+	activity := models.Activity{}
 	repository := models.Repository{}
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&repository); err != nil {
@@ -50,6 +54,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	activity.Log(DB, repository, user)
 	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }
 
