@@ -104,6 +104,8 @@ func Rebuild(w http.ResponseWriter, r *http.Request) {
  */
 func buildContainer(repository models.Repository, build_pack, commit_hash string) {
 	log.Info().Msgf("Starting go routine to build container")
+	user := models.User{}
+	DB.First(&user, repository.UserID)
 	port, err := freeport.GetFreePort()
 	if repository.ContainerID != "" {
 		log.Info().Msgf("Stopping previous container")
@@ -126,7 +128,7 @@ func buildContainer(repository models.Repository, build_pack, commit_hash string
 	repository.ContainerID = containerID
 	build := models.Build{
 		CommitHash:   commit_hash,
-		UserName:     repository.UserName,
+		Email:        user.Email,
 		UserID:       repository.UserID,
 		RepositoryID: repository.ID,
 	}

@@ -8,6 +8,6 @@ type Build struct {
 	Base
 	CommitHash   string `json:"commit_hash"`
 	RepositoryID uint   `json:"repository_id"`
-	UserName     string `json:"user_name"`
+	Email        string `json:"email"`
 	UserID       uint   `json:"user_id"`
 }
