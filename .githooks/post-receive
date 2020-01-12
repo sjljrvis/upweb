@@ -33,10 +33,15 @@ const triggerBuild = (commitHash, callback) => {
       build_pack: buildPack,
       repository_name: repository_name,
       commit_hash: commitHash
-    }
+    },
+    responseType: 'stream'
   }
   axios(options).then(res => {
-    callback(null, res.data);
+    res.data.pipe(process.stdout);
+    res.data.on('end', function () {
+      process.exit(0)
+    });
+    // callback(null, res.data);
   })
 }
 
@@ -58,7 +63,7 @@ const checkoutTree = (commitHash, callback) => {
     else {
       checkForBuildFile((res) => {
         triggerBuild(commitHash, (err, data) => {
-          callback(null, true);
+          // callback(null, true);
         })
       })
     }
@@ -79,10 +84,6 @@ rl.on('line', (input) => {
   let repoInfo = input.split(' ');
   let commitHash = repoInfo[1];
   checkoutTree(commitHash, (err, res) => {
-    console.log("-->  Files changed");
-    console.log("-->  Buildpack ", buildPack);
-    console.log("-->  Building app");
-    console.log(`Checkout your app ${repository_name}.tocstack.com`);
-    process.exit(0);
+
   })
 });

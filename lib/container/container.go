@@ -90,11 +90,11 @@ func Stop(containerID string) {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		log.Error().Msgf(err.Error())
 	}
 	log.Info().Msgf("Stopping container ... ")
 	if err := cli.ContainerStop(ctx, containerID, nil); err != nil {
-		panic(err)
+		log.Error().Msgf(err.Error())
 	}
 	log.Info().Msgf("Stopping container ... done")
 }
@@ -103,11 +103,11 @@ func Remove(containerID string) {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		panic(err)
+		log.Error().Msgf(err.Error())
 	}
 	log.Info().Msgf("Removing container ... ")
 	if err := cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{}); err != nil {
-		panic(err)
+		log.Error().Msgf(err.Error())
 	}
 	log.Info().Msgf("Removing container ... done")
 }
