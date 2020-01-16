@@ -92,11 +92,9 @@ func Stop(containerID string) {
 	if err != nil {
 		log.Error().Msgf(err.Error())
 	}
-	log.Info().Msgf("Stopping container ... ")
 	if err := cli.ContainerStop(ctx, containerID, nil); err != nil {
 		log.Error().Msgf(err.Error())
 	}
-	log.Info().Msgf("Stopping container ... done")
 }
 
 func Remove(containerID string) {
@@ -105,11 +103,9 @@ func Remove(containerID string) {
 	if err != nil {
 		log.Error().Msgf(err.Error())
 	}
-	log.Info().Msgf("Removing container ... ")
 	if err := cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{}); err != nil {
 		log.Error().Msgf(err.Error())
 	}
-	log.Info().Msgf("Removing container ... done")
 }
 
 func BuildImage(path, name string) {
