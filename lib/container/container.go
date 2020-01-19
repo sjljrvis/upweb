@@ -15,7 +15,7 @@ import (
 )
 
 // GenerateDefault will spin up default container
-func GenerateDefault(name string, port int) {
+func GenerateDefault(name string, port int) string {
 	imageName := "dnow-default"
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
@@ -46,6 +46,7 @@ func GenerateDefault(name string, port int) {
 		log.Error().Msgf("Unable to start docker container", err.Error())
 	}
 	log.Info().Msgf("Started container", _container.ID)
+	return _container.ID
 }
 
 func Create(image string, port int) string {
