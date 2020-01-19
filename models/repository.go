@@ -10,6 +10,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/phayes/freeport"
 	uuid "github.com/satori/go.uuid"
+	container "github.com/sjljrvis/deploynow/lib/container"
+	digitalocean "github.com/sjljrvis/deploynow/lib/digitalocean"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
 	nginx "github.com/sjljrvis/deploynow/lib/nginx"
@@ -26,6 +28,7 @@ type Repository struct {
 	UserID         uint   `json:"user_id"`
 	UserName       string `json:"user_name"`
 	ContainerID    string `json:"container_id" gorm:"default:'0'"`
+	DNSID          string `json:"dns_id"`
 	Variables      []Variable
 }
 
@@ -56,16 +59,37 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	err = git.CreateHooks(repo.Path)
 	nginx.WriteConfig(repo.RepositoryName, strconv.Itoa(port))
 	nginx.Symlink(repo.RepositoryName)
-	// container.GenerateDefault(repo.RepositoryName, port)
+	container_id := container.GenerateDefault(repo.RepositoryName, port)
+	dns_id, err := digitalocean.CreateDNS(repo.RepositoryName)
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
-	scope.SetColumn("State", "stopped")
+	scope.DB().Model(repo).Update("State", "running")
+	scope.DB().Model(repo).Update("ContainerID", container_id)
+	scope.DB().Model(repo).Update("DNSID", dns_id)
 	return
 }
 
 func (repository *Repository) BeforeDelete(scope *gorm.Scope) (err error) {
 	scope.DB().Where("repository_id = ?", repository.ID).Delete(Variable{})
 	scope.DB().Where("repository_id = ?", repository.ID).Delete(Build{})
+	scope.DB().Where("repository_id = ?", repository.ID).Delete(Activity{})
+	return nil
+}
+
+// AfterCreate will set a UUID rather than numeric ID.
+/*
+	//TODO
+	1) Clean associated dirs
+	2) Add hook files
+	3) Lauch default container
+	4) Change owner ship to www-data
+*/
+func (repository *Repository) AfterDelete(scope *gorm.Scope) (err error) {
+	err = fs.RemoveDir(repository.Path)
+	err = fs.RemoveDir(repository.PathDocker)
+	container.Stop(repository.ContainerID)
+	container.Remove(repository.ContainerID)
+	digitalocean.RemoveDNS(repository.DNSID)
 	return nil
 }
