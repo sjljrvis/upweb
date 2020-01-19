@@ -26,6 +26,14 @@ func CreateDir(path string) error {
 	return nil
 }
 
+func RemoveDir(path string) error {
+	err := os.RemoveAll(path)
+	if err != nil {
+		return fmt.Errorf("error creating tabelspace folders: %v ", err.Error())
+	}
+	return nil
+}
+
 func Chown(path, group string) {
 	if runtime.GOOS != "darwin" {
 		group, err := user.Lookup(group)
