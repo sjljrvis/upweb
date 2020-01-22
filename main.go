@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	DB "github.com/sjljrvis/deploynow/db"
 
@@ -11,8 +13,9 @@ import (
 )
 
 func init() {
-	gotenv.Load()
-	log.Info().Msgf("Starting server at port 3000")
+	env_path := fmt.Sprintf("./configs/.%s.env", os.Getenv("ENV"))
+	gotenv.Load(env_path)
+	log.Info().Msgf("Starting server at port %s", os.Getenv("PORT"))
 }
 
 func main() {

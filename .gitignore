@@ -3,5 +3,5 @@ vendor/
 
 .dummy/
 .env
-
+configs/.*.env
 tmp/
