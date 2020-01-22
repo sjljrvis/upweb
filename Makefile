@@ -14,7 +14,7 @@ run-dev: clean
 	ENV=development go run main.go
 
 run-prod: clean
-	ENV=production go run main.go
+	ENV=production GOOS=linux GOARCH=amd64 go build .
 
 build: clean
 	ENV=developement GOOS=linux GOARCH=amd64 go build .
