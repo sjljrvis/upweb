@@ -8,6 +8,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/phayes/freeport"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	container "github.com/sjljrvis/deploynow/lib/container"
@@ -134,7 +135,18 @@ func _buildLogs(_channel chan []byte) {
 
 //Getlogs controller
 func Getlogs(w http.ResponseWriter, r *http.Request) {
-	rdx, _ := container.Logs(r.Context(), "a3c3c14e3455")
+	params := mux.Vars(r)
+	repository := models.Repository{}
+	query := make(map[string]interface{})
+	query["uuid"] = params["uuid"]
+	err := DB.Where(query).First(&repository).Error
+
+	if err != nil {
+		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	rdx, _ := container.Logs(r.Context(), repository.ContainerID)
 	flusher, ok := w.(http.Flusher)
 
 	if !ok {
