@@ -22,7 +22,7 @@ type digitalOcean struct {
 }
 
 // CreateDNS will create a A name record in cloud provide
-func CreateDNS(repository_name string) (string, error) {
+func CreateDNS(repository_name string) (float64, error) {
 
 	doClient := new(digitalOcean)
 	doClient.Domain = domain
@@ -58,8 +58,8 @@ func CreateDNS(repository_name string) (string, error) {
 	body, _ := ioutil.ReadAll(resp.Body)
 	var response map[string]interface{}
 	err = json.Unmarshal([]byte(body), &response)
-	response_map := response["domain_records"].(map[string]interface{})
-	_id := response_map["id"].(string)
+	response_map := response["domain_record"].(map[string]interface{})
+	_id := response_map["id"].(float64)
 	return _id, err
 }
 
@@ -90,13 +90,13 @@ func GetDNS(record_id string) (interface{}, error) {
 }
 
 // RemoveDNS will remove A name record fron cloud Provider
-func RemoveDNS(record_id string) (interface{}, error) {
+func RemoveDNS(record_id float64) (interface{}, error) {
 	doClient := new(digitalOcean)
 	doClient.Domain = domain
 	doClient.IP = "167.71.237.137"
 	doClient.Token = "38936697bd54da1c86dbf68e737f49cd60492d5a8c31d7ce4b6b76bce1450b06"
 
-	url := fmt.Sprintf("%s/%s/records/%s", os.Getenv("DIGITAL_OCEAN_HOST"), domain, record_id)
+	url := fmt.Sprintf("%s/%s/records/%f", os.Getenv("DIGITAL_OCEAN_HOST"), domain, record_id)
 	req, err := http.NewRequest("DELETE", url, nil)
 
 	req.Header.Set("Accept", "application/json")

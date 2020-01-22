@@ -19,16 +19,16 @@ import (
 
 type Repository struct {
 	Base
-	RepositoryName string `gorm:"unique" json:"repository_name"`
-	Language       string `json:"language"`
-	Path           string `json:"path"`
-	PathDocker     string `json:"path_docker"`
-	Description    string `json:"description"`
-	State          string `json:"state" gorm:"default:'stopped'"`
-	UserID         uint   `json:"user_id"`
-	UserName       string `json:"user_name"`
-	ContainerID    string `json:"container_id" gorm:"default:'0'"`
-	DNSID          string `json:"dns_id"`
+	RepositoryName string  `gorm:"unique" json:"repository_name"`
+	Language       string  `json:"language"`
+	Path           string  `json:"path"`
+	PathDocker     string  `json:"path_docker"`
+	Description    string  `json:"description"`
+	State          string  `json:"state" gorm:"default:'stopped'"`
+	UserID         uint    `json:"user_id"`
+	UserName       string  `json:"user_name"`
+	ContainerID    string  `json:"container_id" gorm:"default:'0'"`
+	DNSID          float64 `json:"dns_id"`
 	Variables      []Variable
 }
 
