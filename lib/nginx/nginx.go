@@ -14,7 +14,7 @@ func getConfig(name string, port string) string {
 	conf := `
 	server {
 		listen 80; 
-		server_name ` + name + `.tocstack.com;
+		server_name ` + name + `.upweb.io;
 		location / {
 		 proxy_set_header X-Real-IP $remote_addr;
 		 proxy_set_header Host $host;
@@ -26,8 +26,8 @@ func getConfig(name string, port string) string {
 }
 
 func Symlink(name string) error {
-	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".toctsack.com")
-	sitesEnabled := path.Join(os.Getenv("NGINX_SITES_ENABLED"), name+".toctsack.com")
+	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".upweb.io")
+	sitesEnabled := path.Join(os.Getenv("NGINX_SITES_ENABLED"), name+".upweb.io")
 	err := os.Symlink(confPath, sitesEnabled)
 	if err != nil {
 		return err
