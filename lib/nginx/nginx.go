@@ -48,7 +48,7 @@ func Reload() error {
 
 // WriteConfig Creates ginx config
 func WriteConfig(name string, port string) {
-	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".toctsack.com")
+	confPath := path.Join(os.Getenv("NGINX_SITES_AVAILABLE"), name+".upweb.io")
 	conf := []byte(getConfig(name, port))
 	err := ioutil.WriteFile(confPath, conf, 0777)
 	if err != nil {
