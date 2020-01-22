@@ -96,7 +96,7 @@ func NewRouter() *mux.Router {
 	containerRouter := r.PathPrefix("/api/v1/container").Subrouter()
 	// repositoryRouter.Use(AuthMiddleware)
 	containerRouter.HandleFunc("/build", ContainerController.Build).Methods("POST")
-	containerRouter.HandleFunc("/logs", ContainerController.Getlogs).Methods("GET")
+	containerRouter.HandleFunc("/logs/{uuid}", ContainerController.Getlogs).Methods("GET")
 	containerRouter.HandleFunc("/dev", ContainerController.BuildLogs).Methods("GET")
 
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))

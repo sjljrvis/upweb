@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path"
 	"strconv"
 
 	"github.com/docker/docker/api/types"
@@ -17,6 +18,8 @@ import (
 // GenerateDefault will spin up default container
 func GenerateDefault(name string, port int) string {
 	imageName := "dnow-default"
+	image_path := path.Join(os.Getenv("PROJECT_DIR"), "Dockerfiles")
+	BuildImage(image_path, imageName)
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
 		HostPort: strconv.Itoa(port),
