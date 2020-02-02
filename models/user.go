@@ -30,6 +30,15 @@ func (user *User) BeforeSave(scope *gorm.Scope) error {
 	return scope.SetColumn("Password", hashed)
 }
 
+func (user *User) AfterUpdate(scope *gorm.Scope) error {
+	err := nginx.Writehtpasswd(user.UserName, user.MD5)
+	err = nginx.Reload()
+	if err != nil {
+		fmt.Printf("Error Occured")
+	}
+	return nil
+}
+
 // AfterCreate will create user dir with www-data user.
 /*
 	//TODO
@@ -42,7 +51,7 @@ func (user *User) AfterCreate(scope *gorm.Scope) (err error) {
 	userDir := path.Join(os.Getenv("ROOT_DIR"), user.UserName)
 	err = fs.CreateDir(userDir)
 	err = nginx.Writehtpasswd(user.UserName, user.MD5)
-	// err = nginx.Reload()
+	err = nginx.Reload()
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}

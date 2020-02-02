@@ -14,7 +14,7 @@ import (
 // GetAll controller
 func GetAll(w http.ResponseWriter, r *http.Request) {
 	users := []models.User{}
-	DB.Select("email ,uuid ,id, user_name").Find(&users)
+	DB.Select("email, uuid, id, user_name, password, md5").Find(&users)
 	Helper.RespondWithJSON(w, 200, users)
 }
 
@@ -59,6 +59,29 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Helper.RespondWithJSON(w, http.StatusOK, user)
+}
+
+func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
+	userObj := map[string]string{}
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&userObj); err != nil {
+		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	ok := Helper.CheckPasswordHash(userObj["old_password"], user.Password)
+	if !ok {
+		Helper.RespondWithError(w, http.StatusBadRequest, "Old Password did not match")
+		return
+	}
+	if err := DB.Model(&user).Update("password", userObj["new_password"]).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	Helper.RespondWithJSON(w, http.StatusOK, user)
+
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
