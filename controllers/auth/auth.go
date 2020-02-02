@@ -39,7 +39,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		token, _ := Helper.GenerateJWT(user.UUID, user.Email)
 		Helper.RespondWithJSON(w, 200, map[string]string{"message": "login success", "token": token, "email": user.Email, "user_name": user.UserName})
 	} else {
-		Helper.RespondWithError(w, 403, "Fatal Authentication")
+		Helper.RespondWithError(w, 403, "Email or Password is incorrect")
 		return
 	}
 }
