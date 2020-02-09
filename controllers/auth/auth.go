@@ -37,7 +37,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	hashCheck := Helper.CheckPasswordHash(authData.Password, user.Password)
 	if hashCheck {
 		token, _ := Helper.GenerateJWT(user.UUID, user.Email)
-		Helper.RespondWithJSON(w, 200, map[string]string{"message": "login success", "token": token, "email": user.Email, "user_name": user.UserName})
+		Helper.RespondWithJSON(w, 200, map[string]interface{}{"message": "login success", "token": token, "email": user.Email, "user_name": user.UserName, "uuid": user.UUID})
 	} else {
 		Helper.RespondWithError(w, 403, "Email or Password is incorrect")
 		return
