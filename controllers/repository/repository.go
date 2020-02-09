@@ -7,6 +7,8 @@ import (
 	// "log"
 	"github.com/gorilla/mux"
 	. "github.com/sjljrvis/deploynow/db"
+	github "github.com/sjljrvis/deploynow/lib/github"
+
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	models "github.com/sjljrvis/deploynow/models"
 )
@@ -35,6 +37,19 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Helper.RespondWithJSON(w, 200, repository)
+}
+
+func GetGithubRepos(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
+	github_account := models.GithubAccount{}
+	err := DB.First(&user).Related(&github_account).Error
+	if err != nil {
+		Helper.RespondWithError(w, http.StatusNotFound, "Github account not connected")
+		return
+	}
+	result := github.Repositories(github_account.Login)
+	Helper.RespondWithJSON(w, 200, result)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {

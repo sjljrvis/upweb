@@ -3,6 +3,7 @@ package lib
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -59,4 +60,21 @@ func Profile(token string) []byte {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body
+}
+
+func Repositories(user string) []map[string]interface{} {
+	api_url := fmt.Sprintf("https://api.github.com/users/%s/repos?per_page=50", user)
+	req, err := http.NewRequest("GET", api_url, nil)
+	req.Header.Set("Accept", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Error().Msg(err.Error())
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	var dt []map[string]interface{}
+	_ = json.Unmarshal(body, &dt)
+	return dt
 }
