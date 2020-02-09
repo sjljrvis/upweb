@@ -42,10 +42,11 @@ func NewRouter() *mux.Router {
 	userRouter := r.PathPrefix("/api/v1/user").Subrouter()
 	userRouter.HandleFunc("/password", AuthMiddleware(UserController.UpdatePassword)).Methods("PUT")
 	userRouter.HandleFunc("/", UserController.GetAll).Methods("GET")
-	userRouter.HandleFunc("/{id}", UserController.Get).Methods("GET")
 	userRouter.HandleFunc("/", UserController.Create).Methods("POST")
 	userRouter.HandleFunc("/{id}", UserController.Delete).Methods("DELETE")
 	userRouter.HandleFunc("/{id}", AuthMiddleware(UserController.Update)).Methods("PUT")
+	userRouter.HandleFunc("/{uuid}/github", UserController.GetGithubAccount).Methods("GET")
+	userRouter.HandleFunc("/{uuid}/github", UserController.RemoveGithubAccount).Methods("DELETE")
 
 	// userRouter.HandleFunc("/search/", UserController.Search).Methods("GET")
 
@@ -57,11 +58,11 @@ func NewRouter() *mux.Router {
 	repositoryRouter := r.PathPrefix("/api/v1/repository").Subrouter()
 	// repositoryRouter.Use(AuthMiddleware)
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.GetAll)).Methods("GET")
+	repositoryRouter.HandleFunc("/github/", AuthMiddleware(RepositoryController.GetGithubRepos)).Methods("GET")
 	repositoryRouter.HandleFunc("/{uuid}", AuthMiddleware(RepositoryController.Get)).Methods("GET")
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.Create)).Methods("POST")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
-
 	/*
 		repository subrouter
 		handle  REST-api /user here

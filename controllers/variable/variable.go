@@ -15,7 +15,7 @@ import (
 func GetAll(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	repository := models.Repository{}
-	if err := DB.First(&repository, params["repository_id"]).Error; err != nil {
+	if err := DB.Where("uuid = ?", params["repository_id"]).First(&repository).Error; err != nil {
 		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}

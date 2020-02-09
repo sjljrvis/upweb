@@ -12,8 +12,8 @@ import (
 type Base struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	UUID      uuid.UUID `gorm:"type:uuid" json:"uuid"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
