@@ -15,18 +15,35 @@ import (
 func GetAll(w http.ResponseWriter, r *http.Request) {
 	users := []models.User{}
 	DB.Select("email, uuid, id, user_name, password, md5").Find(&users)
-	Helper.RespondWithJSON(w, 200, users)
+	Helper.RespondWithJSON(w, 200, &users)
 }
 
 //Get controller
-func Get(w http.ResponseWriter, r *http.Request) {
+func GetGithubAccount(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	user := models.User{}
-	if err := DB.First(&user, params["id"]).Error; err != nil {
+	github_account := models.GithubAccount{}
+	query := make(map[string]interface{})
+	query["uuid"] = params["uuid"]
+	if err := DB.First(&user, query).Related(&github_account).Error; err != nil {
 		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}
-	Helper.RespondWithJSON(w, 200, user)
+	Helper.RespondWithJSON(w, 200, github_account)
+}
+
+func RemoveGithubAccount(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	user := models.User{}
+	github_account := models.GithubAccount{}
+	query := make(map[string]interface{})
+	query["uuid"] = params["uuid"]
+	DB.Find(&user, query)
+	if err := DB.Delete(&github_account, models.GithubAccount{UserID: user.ID}).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
+		return
+	}
+	Helper.RespondWithJSON(w, 200, github_account)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
