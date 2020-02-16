@@ -59,6 +59,7 @@ func NewRouter() *mux.Router {
 	// repositoryRouter.Use(AuthMiddleware)
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.GetAll)).Methods("GET")
 	repositoryRouter.HandleFunc("/github/", AuthMiddleware(RepositoryController.GetGithubRepos)).Methods("GET")
+	repositoryRouter.HandleFunc("/github/link", AuthMiddleware(RepositoryController.LinkGithub)).Methods("POST")
 	repositoryRouter.HandleFunc("/{uuid}", AuthMiddleware(RepositoryController.Get)).Methods("GET")
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.Create)).Methods("POST")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")

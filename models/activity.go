@@ -14,8 +14,8 @@ type Activity struct {
 	// MetaData     interface{} `json:"meta_data"`
 }
 
-func (activity *Activity) Log(db *gorm.DB, repository Repository, user User) {
-	activity.Type = "Initial release"
+func (activity *Activity) Log(db *gorm.DB, repository Repository, user User, activity_type string) {
+	activity.Type = activity_type
 	activity.Email = user.Email
 	activity.UserID = user.ID
 	activity.RepositoryId = repository.ID

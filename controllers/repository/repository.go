@@ -69,7 +69,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	activity.Log(DB, repository, user)
+	activity.Log(DB, repository, user, "Initial Release")
 	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }
 
@@ -106,4 +106,36 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Helper.RespondWithJSON(w, http.StatusOK, nil)
+}
+
+func LinkGithub(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
+	activity := models.Activity{}
+	repository := models.Repository{}
+	payload := map[string]string{}
+
+	defer r.Body.Close()
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&payload); err != nil {
+		Helper.RespondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	query := make(map[string]interface{})
+	query["user_id"] = user.ID
+	query["uuid"] = payload["uuid"]
+	if err := DB.Find(&repository, query).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	repository.GithubLinked = true
+	repository.GithubURL = payload["clone_url"]
+
+	if err := DB.Save(&repository).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	activity.Log(DB, repository, user, "Linked Github Repository")
+	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }
