@@ -10,9 +10,8 @@ import (
 	BuildsController "github.com/sjljrvis/deploynow/controllers/builds"
 	ContainerController "github.com/sjljrvis/deploynow/controllers/containers"
 	RepositoryController "github.com/sjljrvis/deploynow/controllers/repository"
-	VariableController "github.com/sjljrvis/deploynow/controllers/variable"
-
 	UserController "github.com/sjljrvis/deploynow/controllers/user"
+	VariableController "github.com/sjljrvis/deploynow/controllers/variable"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 )
 
@@ -60,6 +59,7 @@ func NewRouter() *mux.Router {
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.GetAll)).Methods("GET")
 	repositoryRouter.HandleFunc("/github/", AuthMiddleware(RepositoryController.GetGithubRepos)).Methods("GET")
 	repositoryRouter.HandleFunc("/github/link", AuthMiddleware(RepositoryController.LinkGithub)).Methods("POST")
+	repositoryRouter.HandleFunc("/github/unlink", AuthMiddleware(RepositoryController.UnlinkGithub)).Methods("POST")
 	repositoryRouter.HandleFunc("/{uuid}", AuthMiddleware(RepositoryController.Get)).Methods("GET")
 	repositoryRouter.HandleFunc("/", AuthMiddleware(RepositoryController.Create)).Methods("POST")
 	repositoryRouter.HandleFunc("/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
@@ -68,9 +68,7 @@ func NewRouter() *mux.Router {
 		repository subrouter
 		handle  REST-api /user here
 	*/
-
 	variableRouter := r.PathPrefix("/api/v1/variable").Subrouter()
-	// repositoryRouter.Use(AuthMiddleware)
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.GetAll)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(VariableController.Get)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.Create)).Methods("POST")
@@ -78,7 +76,6 @@ func NewRouter() *mux.Router {
 	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
 
 	activityRouter := r.PathPrefix("/api/v1/activity").Subrouter()
-	// repositoryRouter.Use(AuthMiddleware)
 	activityRouter.HandleFunc("/{repository_id}", AuthMiddleware(ActivityController.GetAll)).Methods("GET")
 
 	/*
@@ -99,8 +96,8 @@ func NewRouter() *mux.Router {
 	containerRouter := r.PathPrefix("/api/v1/container").Subrouter()
 	// repositoryRouter.Use(AuthMiddleware)
 	containerRouter.HandleFunc("/build", ContainerController.Build).Methods("POST")
+	containerRouter.HandleFunc("/github/build/{id}", ContainerController.BuildFromGithub).Methods("GET")
 	containerRouter.HandleFunc("/logs/{uuid}", ContainerController.Getlogs).Methods("GET")
-	containerRouter.HandleFunc("/dev", ContainerController.BuildLogs).Methods("GET")
 
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	return r

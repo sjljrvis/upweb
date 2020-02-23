@@ -33,3 +33,11 @@ func CreateHooks(dir string) error {
 	err = fs.Copy(path.Join(os.Getenv("PROJECT_DIR"), ".githooks", "post-receive"), path.Join(dir, "hooks", "post-receive"))
 	return nil
 }
+
+func Clone(dir string, clone_url string) error {
+	_, err := git.PlainClone(dir, false, &git.CloneOptions{
+		URL:      clone_url,
+		Progress: nil,
+	})
+	return err
+}
