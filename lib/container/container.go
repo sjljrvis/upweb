@@ -52,8 +52,7 @@ func GenerateDefault(name string, port int) string {
 	return _container.ID
 }
 
-func Create(image string, port int) string {
-
+func Create(image string, port int, variables []string) string {
 	portString := strconv.Itoa(port)
 	hostBinding := nat.PortBinding{
 		HostIP:   "0.0.0.0",
@@ -63,12 +62,14 @@ func Create(image string, port int) string {
 		nat.Port(portString + "/tcp"): []nat.PortBinding{hostBinding},
 	}
 
+	envs := append(variables, "PORT="+portString)
+
 	containerConfig := &container.Config{
 		Image: image,
 		ExposedPorts: nat.PortSet{
 			nat.Port(portString + "/tcp"): struct{}{},
 		},
-		Env: []string{"PORT=" + portString},
+		Env: envs,
 	}
 
 	hostConfig := &container.HostConfig{

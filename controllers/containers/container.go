@@ -13,6 +13,7 @@ import (
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	container "github.com/sjljrvis/deploynow/lib/container"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
+	git "github.com/sjljrvis/deploynow/lib/git"
 
 	"github.com/sjljrvis/deploynow/log"
 	models "github.com/sjljrvis/deploynow/models"
@@ -73,64 +74,42 @@ func Build(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Create controller
-func Create(w http.ResponseWriter, r *http.Request) {
+//Build controller
+func BuildFromGithub(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	params := mux.Vars(r)
+	// var buildData build
+	buildlogChannel := make(chan []byte)
+	repository := models.Repository{}
+	notify := r.Context().Done()
 
-}
-
-//Stop controller
-func Stop(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func BuildLogs(w http.ResponseWriter, r *http.Request) {
-	_channel := make(chan []byte)
 	flusher, ok := w.(http.Flusher)
 	if !ok {
-		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+		log.Error().Msgf("Streaming unsupported! %s", http.StatusInternalServerError)
 		return
 	}
+
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	notify := r.Context().Done()
 	go func() {
 		<-notify
 		log.Info().Msg("Stopped streaming")
 	}()
 
-	go _buildLogs(_channel)
-
-	for {
-		data := <-_channel
-		if string(data) == "EOF" {
-			break
-		}
-		w.Write(data)
-		flusher.Flush()
+	if err := DB.First(&repository, params["id"]).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
+		return
 	}
 
-}
-
-func _buildLogs(_channel chan []byte) {
-	_channel <- []byte("golang build pack detected \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("stopping runnning app instance \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("Building app \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("Configuring app runtime \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("Installing dependencies \n \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("Build Succeded \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("Starting app instance \n")
-	time.Sleep(2 * time.Second)
-	_channel <- []byte("EOF")
-	close(_channel)
+	go buildContainerFromGithub(repository, "node", buildlogChannel)
+	for {
+		data := <-buildlogChannel
+		fmt.Fprintf(w, "data: %s\n\n", string(data)+"\n\n")
+		flusher.Flush()
+	}
 }
 
 //Getlogs controller
@@ -182,6 +161,16 @@ func Getlogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Create controller
+func Create(w http.ResponseWriter, r *http.Request) {
+
+}
+
+//Stop controller
+func Stop(w http.ResponseWriter, r *http.Request) {
+
+}
+
 //Rebuild controller
 func Rebuild(w http.ResponseWriter, r *http.Request) {
 
@@ -199,25 +188,25 @@ func buildContainer(repository models.Repository, build_pack, commit_hash string
 	port, err := freeport.GetFreePort()
 	buildlogChannel <- []byte("------> Creating application runtime \n")
 	if repository.ContainerID != "" {
-		log.Info().Msgf("Stopping previous container")
+		log.Info().Msgf("[BUILD] stopping container %s", repository.ContainerID)
 		container.Stop(repository.ContainerID)
 		container.Remove(repository.ContainerID)
 	}
-	log.Info().Msg("Copying Dockerfile to project directory")
+	log.Info().Msg("[BUILD] Copying Dockerfile to project directory")
 	buildPackPath := path.Join(os.Getenv("PROJECT_DIR"), "buildpacks", build_pack, "Dockerfile")
 	projectDockerFile := path.Join(repository.PathDocker, "Dockerfile")
 	err = fs.Copy(buildPackPath, projectDockerFile)
 	err = fs.ReplaceStr(projectDockerFile, "dnow_replace_me", repository.RepositoryName)
 	fmt.Sprint(err)
-	log.Info().Msg("Building Docker image ... started")
+	log.Info().Msg("[BUILD] Building Docker image")
 	buildlogChannel <- []byte("------> Installing Dependencies \n")
 	container.BuildImage(repository.PathDocker, repository.RepositoryName)
-	log.Info().Msg("Building Docker image ... done")
+	log.Info().Msg("[BUILD] Docker image build complete")
 
 	buildlogChannel <- []byte("------> Building Dependencies \n")
-	log.Info().Msg("Building Docker Container ... started")
-	containerID := container.Create(repository.RepositoryName, port)
-	log.Info().Msgf("Building Docker Container ... done %s", containerID)
+	log.Info().Msg("[BUILD ]Building Docker Container")
+	containerID := container.Create(repository.RepositoryName, port, nil)
+	log.Info().Msgf("[BUILD] Starting Docker Container %s", containerID)
 	buildlogChannel <- []byte("------> Built Successfully! \n")
 	repository.ContainerID = containerID
 	build := models.Build{
@@ -229,6 +218,95 @@ func buildContainer(repository models.Repository, build_pack, commit_hash string
 	DB.Save(repository)
 	DB.Create(&build)
 	buildlogChannel <- []byte("------> Launching... \n")
+	buildlogChannel <- []byte(appication_url)
+	buildlogChannel <- []byte("EOF")
+	close(buildlogChannel)
+}
+
+func buildContainerFromGithub(repository models.Repository, build_pack string, buildlogChannel chan []byte) {
+	// Remove contents from repo_docker dir here
+	variables := []models.Variable{}
+	envs := []string{}
+	appication_url := fmt.Sprintf("------> https://%s.upweb.io", repository.RepositoryName)
+	buildlogChannel <- []byte("------> Cleaning workspace\n\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	fs.RemoveDir(repository.PathDocker)
+	fs.CreateDir(repository.PathDocker)
+	buildlogChannel <- []byte("------> Re-Initializing workspace \n\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("------> Cloning code from github\n")
+	git.Clone(repository.PathDocker, repository.GithubURL)
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+
+	if repository.ContainerID != "" {
+		log.Info().Msgf("[BUILD] stopping container %s", repository.ContainerID)
+		container.Stop(repository.ContainerID)
+		container.Remove(repository.ContainerID)
+	}
+
+	buildlogChannel <- []byte("------> Get application settings | variables \n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte(fmt.Sprintf("        Using BUILD_PACK as %s", build_pack))
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+
+	DB.Find(&repository).Related(&variables)
+	port, err := freeport.GetFreePort()
+
+	buildlogChannel <- []byte("------> Creating application runtime \n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("        [PORT] will be set as environment variable dynamically \n")
+	buildlogChannel <- []byte("\n")
+
+	for _, v := range variables {
+		vars := fmt.Sprintf("         %s=%s \n", v.Key, v.Value)
+		envs = append(envs, fmt.Sprintf("%s=%s", v.Key, v.Value))
+		buildlogChannel <- []byte(vars)
+	}
+
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+
+	buildlogChannel <- []byte("------> Installing Dependencies \n")
+	start_time := time.Now()
+	log.Info().Msg("[BUILD] Copying Dockerfile to project directory")
+	buildPackPath := path.Join(os.Getenv("PROJECT_DIR"), "buildpacks", build_pack, "Dockerfile")
+	projectDockerFile := path.Join(repository.PathDocker, "Dockerfile")
+	err = fs.Copy(buildPackPath, projectDockerFile)
+	err = fs.ReplaceStr(projectDockerFile, "dnow_replace_me", repository.RepositoryName)
+	fmt.Sprint(err)
+	log.Info().Msg("[BUILD] Building Docker image")
+
+	container.BuildImage(repository.PathDocker, repository.RepositoryName)
+	log.Info().Msg("[BUILD] Docker image build complete")
+	end_time := time.Since(start_time)
+	time_diff := float32(end_time / time.Second)
+	buildlogChannel <- []byte(fmt.Sprintf("        took %.2f seconds", time_diff))
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("------> Building Dependencies \n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+
+	log.Info().Msg("[BUILD ]Building Docker Container")
+	containerID := container.Create(repository.RepositoryName, port, envs)
+	log.Info().Msgf("Building Docker Container ... done %s", containerID)
+
+	buildlogChannel <- []byte("------> Build succeeded! \n")
+	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("\n")
+
+	repository.ContainerID = containerID
+	DB.Save(repository)
+	buildlogChannel <- []byte("------> Launching... \n")
+	buildlogChannel <- []byte("------> Application deployed on upweb")
 	buildlogChannel <- []byte(appication_url)
 	buildlogChannel <- []byte("EOF")
 	close(buildlogChannel)
