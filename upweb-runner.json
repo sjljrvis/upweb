@@ -1,0 +1,7 @@
+{
+  "apps" : [{
+    "name"       : "upweb",
+    "script"     : "run.sh",
+    "interpreter": "bash"
+  }]
+}

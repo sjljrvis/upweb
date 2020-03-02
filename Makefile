@@ -11,10 +11,14 @@ run: clean
 	ENV=development fresh -c dnow_runner.conf
 
 run-dev: clean
-	ENV=development go run main.go
+	ENV=development GOOS=darwin GOARCH=amd64 go build .
+	pm2 flush
+	pm2 stop upweb
+	pm2 start upweb-runner.json
 
 run-prod: clean
 	ENV=production GOOS=linux GOARCH=amd64 go build .
+	pm2 start upweb-runner.json
 
 build: clean
 	ENV=developement GOOS=linux GOARCH=amd64 go build .
