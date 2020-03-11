@@ -72,8 +72,8 @@ func NewRouter() *mux.Router {
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.GetAll)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(VariableController.Get)).Methods("GET")
 	variableRouter.HandleFunc("/{repository_id}", AuthMiddleware(VariableController.Create)).Methods("POST")
+	variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(VariableController.Delete)).Methods("DELETE")
 	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Update)).Methods("PUT")
-	// variableRouter.HandleFunc("/{repository_id}/{id}", AuthMiddleware(RepositoryController.Delete)).Methods("DELETE")
 
 	activityRouter := r.PathPrefix("/api/v1/activity").Subrouter()
 	activityRouter.HandleFunc("/{repository_id}", AuthMiddleware(ActivityController.GetAll)).Methods("GET")

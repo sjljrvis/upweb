@@ -62,3 +62,22 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 	Helper.RespondWithJSON(w, http.StatusCreated, variable)
 }
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	variable := models.Variable{}
+
+	query := make(map[string]interface{})
+	query["repository_id"] = params["repository_id"]
+	query["id"] = params["id"]
+
+	if err := DB.Find(&variable, query).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
+	}
+
+	if err := DB.Delete(&variable).Error; err != nil {
+		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	Helper.RespondWithJSON(w, http.StatusOK, nil)
+}
