@@ -13,14 +13,28 @@ import (
 func getConfig(name string, port string) string {
 	conf := `
 	server {
-		listen 80; 
-		server_name ` + name + `.upweb.io;
-		location / {
-		 proxy_set_header X-Real-IP $remote_addr;
-		 proxy_set_header Host $host;
-		 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		 proxy_pass http://localhost:` + port + `;
-	 }
+    server_name ` + name + `.upweb.io;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/upweb.io/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/upweb.io/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    location / {
+             proxy_set_header X-Real-IP $remote_addr;
+             proxy_set_header Host $host;
+             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+						 proxy_pass http://localhost:` + port + `;
+          }
+		}
+
+	server {
+		listen 80;
+    listen [::]:80;
+    server_name ` + name + `.upweb.io;
+    return 301 https://$host$request_uri;
+    return 404; # managed by Certbot
 	}`
 	return conf
 }
