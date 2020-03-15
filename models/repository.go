@@ -61,6 +61,7 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	err = git.CreateHooks(repo.Path)
 	nginx.WriteConfig(repo.RepositoryName, strconv.Itoa(port))
 	nginx.Symlink(repo.RepositoryName)
+	nginx.Reload()
 	container_id := container.GenerateDefault(repo.RepositoryName, port)
 	dns_id, err := digitalocean.CreateDNS(repo.RepositoryName)
 	if err != nil {
