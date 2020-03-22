@@ -25,8 +25,8 @@ type User struct {
 // BeforeCreate will set a UUID rather than numeric ID.
 func (user *User) BeforeSave(scope *gorm.Scope) error {
 	hashed, _ := Helper.HashPassword(user.Password)
-	md5 := Helper.GetMD5Hash(user.Password)
-	scope.SetColumn("MD5", md5)
+	md5, _ := Helper.GetMD5Hash(user.UserName, user.Password)
+	scope.SetColumn("MD5", md5[user.UserName])
 	return scope.SetColumn("Password", hashed)
 }
 

@@ -1,9 +1,7 @@
 package helpers
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-
+	htpasswd "github.com/foomo/htpasswd"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,8 +17,8 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func GetMD5Hash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
+func GetMD5Hash(user_name, password string) (map[string]string, error) {
+	passwords := htpasswd.HashedPasswords(map[string]string{})
+	err := passwords.SetPassword(user_name, password, htpasswd.HashAPR1)
+	return passwords, err
 }
