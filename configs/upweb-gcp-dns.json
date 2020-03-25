@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "upweb-platform",
+  "private_key_id": "e82f46a1e734a1983581755d168ad766faf64947",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC0OyADaCKijqX/\nzDvtd0UIt3+wL0dBx4Z6dVQ1+t/K28DLLWfXGFxaihiCjTEOCxCYElGLHV8DaWfY\nQVT0HgEdtoE+JcC19cfhxffIUrQB8eepTU66gLtPKx/L8k7ftdis5LiEJ7TO3z7V\n3lhJA8Aaeb+ai1mAatR3kExo/iu/YnlhvveEdhhXMGk3rAUVFDa9YAEXBIm17lIY\nG8G1aSkxSjr5NF6yYuhslSLoKgTke9GdYjfyX+KdO2f+F7bau9WoclR/Xf/gvXcH\ngIZAP7o9QVDzNdr63lIoJttwbZhSFGRP7sK0G8jr+GexPMsEVie+bg+8sUIw+qrw\nsl/3sLqLAgMBAAECggEARCPEZzVUPuQyo2LKV23L1k9WAbzmMlrmn17Dj0MBoDb0\nDXzlsP8/T2W9fYI3BSmuxOfMF43rsaUEw1Bz93Vuk5bAB0iLst+xCc1ocD7AWqnk\nHXCibsWjy3sw4tEB+/dK65bvodtHMx1ZKs+MzlISK5BTHfFITdJV8LxH/zv1Oz4z\nteg3l7ewS1x/Ndk3N61hsEGGZY07VkjQ+7WmhrcS90fVOaexI5cwiKtjACqw0WsF\nLZJsfmAz2PLRU/TOG8SRezPrmzM44UPsE0PgRalcA7i9rnY0DoZcaO9xDajcaOVk\nUO8YTz42ZDDp7kXZ2IT7W3/3ryvh9Re9vkwmAz4otQKBgQDgWGKvrPrHMvb/QixC\nCmgjSS3H6dwOVrJ2ODHb7jDzwC85SlnEBFoH4RY4VWcX1u3rNHy93LxwnIXQkzKE\nr/WzY/GybBhgEbrBITiIAqsiWeQOdUxh3dzhtw/UdX1dlpLIcW8ppQWTJwg0v+4X\nExkoJnY+sbnRZe17e5r0KP/cZQKBgQDNqUd6LK0UqGCWNlvSTZdZ+nfSrsAhXXHf\nH7EB5JECkZtTADQTbn6zkkTpNCj64uU0PUoRcHw9CNF2197GI/08nHw5LHfc0FR4\nDO7+SA+T8hcA4cA4+wJZX2M/B7BcmmT4vq/wRx3hT80/+XTY5VpniIS2Jwms174E\nuqxTxBv0LwKBgQCzxoAGcOJg4DlH4ZofrcE3jXuvOHrLzrOhwnRJ3jzCB16QVUFL\nr4UJzViF+gHr+6KaGWxgpNMolnUw59PSukJ054EWTkLWMT7rZpirfR/wHgJ/h4WW\n4zgOdCiuQxwb8/5Zu3St9XxbKCsOQkMjoH1HTFLy+G6EG17L1ggc4gHudQKBgQCV\neUMJ+Q6SxQ3uHvP9lYc7Tl9oMLpThacNk+sChS0fwNQzLyKqPNS5jsWm+NIQBniv\nzxvWMPsbIR2cUqkHOYEEXHes1jUHuCKsXjoVdipcTMeLTIh44XaDnmBznxL/OvfI\nEk+tQwLkjyuOI7BZM9jRBtfty9GsXeEtbr9w4keu4QKBgQClopZik1yJ1ApNcw79\nvc0lSS5wyrjOe/H5tAS7aNswvR2VtjyoGvSBCHy/LljfJlefKgKHbnPoeDMyrByN\nAcyryv38S/h6VOBd82YMCGjD6QbtuGxOtk/TGNxnhKlWqvYj0PlBYYVV7IDcrsiv\n+MoPd3Gt4vTdT4vcFUCViL6qJg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "app-dns@upweb-platform.iam.gserviceaccount.com",
+  "client_id": "108486199575453196275",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/app-dns%40upweb-platform.iam.gserviceaccount.com"
+}

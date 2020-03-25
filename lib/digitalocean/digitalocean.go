@@ -98,7 +98,6 @@ func RemoveDNS(record_id string) (interface{}, error) {
 	doClient.Token = "38936697bd54da1c86dbf68e737f49cd60492d5a8c31d7ce4b6b76bce1450b06"
 
 	url := fmt.Sprintf("%s/%s/records/%s", os.Getenv("DIGITAL_OCEAN_HOST"), domain, record_id)
-	log.Info().Msg("-----------------------------------")
 	log.Info().Msg(url)
 	req, err := http.NewRequest("DELETE", url, nil)
 

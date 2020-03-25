@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/foomo/htpasswd"
 	DB "github.com/sjljrvis/deploynow/db"
 
 	"github.com/sjljrvis/deploynow/log"
@@ -13,17 +12,13 @@ import (
 	"github.com/subosito/gotenv"
 )
 
-const PrefixCryptApr1 = "$apr1$"
-
 func init() {
 	env_path := fmt.Sprintf("./configs/.%s.env", os.Getenv("ENV"))
 	gotenv.Load(env_path)
 	log.Info().Msgf("environment %s", os.Getenv("ENV"))
-	log.Info().Msgf("Starting server at port %s", os.Getenv("PORT"))
+	log.Info().Msgf("environment %s", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 
-	passwords := htpasswd.HashedPasswords(map[string]string{})
-	passwords.SetPassword("sjl", "123456", htpasswd.HashAPR1)
-	fmt.Println(passwords)
+	log.Info().Msgf("Starting server at port %s", os.Getenv("PORT"))
 }
 
 func main() {
