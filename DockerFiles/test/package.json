@@ -1,0 +1,16 @@
+{
+  "name": "alpo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/Users/sejal/Projects/Personal/go/src/github.com/sjljrvis/deploynow/.dummy/charlie/alpo"
+  },
+  "author": "",
+  "license": "ISC"
+}
