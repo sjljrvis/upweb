@@ -35,8 +35,18 @@ func GenerateDefault(name string, port int) string {
 		},
 	}
 
+	logConfig := container.LogConfig{
+		Type: "syslog",
+		Config: map[string]string{
+			"syslog-address":  "udp://" + os.Getenv("UPWEB_ECHO"),
+			"tag":             name,
+			"syslog-facility": "23",
+		},
+	}
+
 	hostConfig := &container.HostConfig{
 		PortBindings: portBinding,
+		LogConfig:    logConfig,
 	}
 
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
@@ -72,8 +82,18 @@ func Create(image string, port int, variables []string) string {
 		Env: envs,
 	}
 
+	logConfig := container.LogConfig{
+		Type: "syslog",
+		Config: map[string]string{
+			"syslog-address":  "udp://" + os.Getenv("UPWEB_ECHO"),
+			"tag":             image,
+			"syslog-facility": "23",
+		},
+	}
+
 	hostConfig := &container.HostConfig{
 		PortBindings: portBinding,
+		LogConfig:    logConfig,
 	}
 
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())

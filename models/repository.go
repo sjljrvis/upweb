@@ -11,8 +11,8 @@ import (
 	"github.com/phayes/freeport"
 	uuid "github.com/satori/go.uuid"
 	container "github.com/sjljrvis/deploynow/lib/container"
-	digitalocean "github.com/sjljrvis/deploynow/lib/digitalocean"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
+	gcp "github.com/sjljrvis/deploynow/lib/gcp"
 	git "github.com/sjljrvis/deploynow/lib/git"
 	nginx "github.com/sjljrvis/deploynow/lib/nginx"
 )
@@ -63,7 +63,7 @@ func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	nginx.Symlink(repo.RepositoryName)
 	nginx.Reload()
 	container_id := container.GenerateDefault(repo.RepositoryName, port)
-	dns_id, err := digitalocean.CreateDNS(repo.RepositoryName)
+	dns_id, err := gcp.CreateDNS(repo.RepositoryName)
 	if err != nil {
 		fmt.Printf("Error Occured")
 	}
@@ -93,6 +93,6 @@ func (repository *Repository) AfterDelete(scope *gorm.Scope) (err error) {
 	err = fs.RemoveDir(repository.PathDocker)
 	container.Stop(repository.ContainerID)
 	container.Remove(repository.ContainerID)
-	digitalocean.RemoveDNS(repository.DNSID)
+	// digitalocean.RemoveDNS(repository.DNSID) #TODO Need to create method in gcp lib
 	return nil
 }

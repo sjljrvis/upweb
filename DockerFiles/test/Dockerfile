@@ -12,8 +12,6 @@ RUN mkdir -p ~/app
 WORKDIR ~/app
 
 ADD . .
-ENV PORT=5555
-ENV VIRTUAL_PORT=5555
 RUN npm install
 ENTRYPOINT ["sh", "docker-entrypoint.sh"]
 
