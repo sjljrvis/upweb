@@ -21,7 +21,7 @@ run-prod: clean
 	pm2 start upweb-runner.json
 
 build: clean
-	ENV=developement GOOS=linux GOARCH=amd64 go build .
+	ENV=production GOOS=linux GOARCH=amd64 go build .
 
 vendor: clean
 	@echo "\n -> Copying vendor dependencies -> started" 
