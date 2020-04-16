@@ -1,3 +1,3 @@
 echo "Starting latest build ---->"
 echo "\n"
-ENV=production ./deploynow
+sudo ENV=production ./deploynow
