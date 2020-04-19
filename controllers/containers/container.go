@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -14,6 +15,7 @@ import (
 	container "github.com/sjljrvis/deploynow/lib/container"
 	fs "github.com/sjljrvis/deploynow/lib/fs"
 	git "github.com/sjljrvis/deploynow/lib/git"
+	nginx "github.com/sjljrvis/deploynow/lib/nginx"
 
 	"github.com/sjljrvis/deploynow/log"
 	models "github.com/sjljrvis/deploynow/models"
@@ -206,6 +208,8 @@ func buildContainer(repository models.Repository, build_pack, commit_hash string
 	buildlogChannel <- []byte("------> Building Dependencies \n")
 	log.Info().Msg("[BUILD ]Building Docker Container")
 	containerID := container.Create(repository.RepositoryName, port, nil)
+	nginx.WriteConfig(repository.RepositoryName, strconv.Itoa(port))
+	nginx.Reload()
 	log.Info().Msgf("[BUILD] Starting Docker Container %s", containerID)
 	buildlogChannel <- []byte("------> Built Successfully! \n")
 	repository.ContainerID = containerID
@@ -297,6 +301,8 @@ func buildContainerFromGithub(repository models.Repository, build_pack string, b
 
 	log.Info().Msg("[BUILD ]Building Docker Container")
 	containerID := container.Create(repository.RepositoryName, port, envs)
+	nginx.WriteConfig(repository.RepositoryName, strconv.Itoa(port))
+	nginx.Reload()
 	log.Info().Msgf("Building Docker Container ... done %s", containerID)
 
 	buildlogChannel <- []byte("------> Build succeeded! \n")
