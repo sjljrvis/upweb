@@ -14,9 +14,9 @@ var buildPack = "default"
 * PATHS and variables
 */
 
-const projectPath = __dirname.split('/').slice(0, 13).join('/').toString().trim();
+const projectPath = __dirname.split('/').slice(0, 6).join('/').toString().trim();
 
-let repository_name = __dirname.trim().split('/')[12];
+let repository_name = __dirname.trim().split('/')[5];
 
 /**
  * Fuctions
