@@ -20,7 +20,7 @@ import (
 type Repository struct {
 	Base
 	RepositoryName string     `gorm:"unique" json:"repository_name"`
-	Language       string     `json:"language"`
+	BuildPack      string     `json:"buildpack" gorm:"default:'nodeJS'"`
 	Path           string     `json:"path"`
 	PathDocker     string     `json:"path_docker"`
 	Description    string     `json:"description"`
@@ -53,6 +53,7 @@ func (repo *Repository) BeforeCreate(scope *gorm.Scope) (err error) {
 	3) Lauch default container
 	4) Change owner ship to www-data
 */
+
 func (repo *Repository) AfterCreate(scope *gorm.Scope) (err error) {
 	port, err := freeport.GetFreePort()
 	err = fs.CreateDir(repo.Path)

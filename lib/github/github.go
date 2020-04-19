@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/sjljrvis/deploynow/log"
 )
@@ -21,9 +22,9 @@ func AccessToken(code, state string) accessToken {
 	data := map[string]interface{}{
 		"code":          code,
 		"state":         state,
-		"client_id":     "821083a95a975c302f45",
-		"client_secret": "11bb8e2adeff0efc5c884a52071355ccd894760e",
-		"redirect_uri":  "http://localhost:3001/#/oauth",
+		"client_id":     os.Getenv("GITHUB_CLIENT_ID"),
+		"client_secret": os.Getenv("GITHUB_CLIENT_SECRET"),
+		"redirect_uri":  os.Getenv("GITHUB_REDIRECT_URL"),
 	}
 	url := "https://github.com/login/oauth/access_token"
 
