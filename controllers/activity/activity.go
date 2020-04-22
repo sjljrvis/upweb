@@ -19,6 +19,6 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	activity := []models.Activity{}
-	DB.Limit(7).Find(&repository).Related(&activity)
+	DB.Limit(7).Order("id desc").Find(&repository).Related(&activity)
 	Helper.RespondWithJSON(w, 200, activity)
 }

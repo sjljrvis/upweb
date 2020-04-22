@@ -69,7 +69,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	activity.Log(DB, repository, user, "Initial Release")
+	go activity.Log(DB, repository.ID, user,"build" ,"Initial Release")
 	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }
 
@@ -136,7 +136,7 @@ func LinkGithub(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	activity.Log(DB, repository, user, "Linked Github Repository")
+	go activity.Log(DB, repository.ID, user, "github" , "Linked Github Repository")
 	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }
 
@@ -168,6 +168,6 @@ func UnlinkGithub(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	activity.Log(DB, repository, user, "Unlinked Github Repository")
+	go activity.Log(DB, repository.ID, user,"github", "Unlinked Github Repository")
 	Helper.RespondWithJSON(w, http.StatusCreated, repository)
 }

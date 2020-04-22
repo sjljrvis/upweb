@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-
 	// "log"
 	"github.com/gorilla/mux"
 	. "github.com/sjljrvis/deploynow/db"
@@ -42,7 +41,10 @@ func Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user := ctx.Value("user").(models.User)
 	params := mux.Vars(r)
+	activity := models.Activity{}
 	repository := models.Repository{}
 	if err := DB.First(&repository, params["repository_id"]).Error; err != nil {
 		Helper.RespondWithError(w, http.StatusNotFound, err.Error())
@@ -60,11 +62,15 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	go activity.Log(DB, repository.ID, user, "configuration" , "Added Configuration variables")
 	Helper.RespondWithJSON(w, http.StatusCreated, variable)
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
+	// ctx := r.Context()
+	// user := ctx.Value("user").(models.User)
 	params := mux.Vars(r)
+	// activity := models.Activity{}
 	variable := models.Variable{}
 
 	query := make(map[string]interface{})
@@ -79,5 +85,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	// repo_id, err := strconv.ParseUint(params["repository_id"], 10)
+	// go activity.Log(DB, repo_id, user, "configuration" , "Removed Configuration variables")
 	Helper.RespondWithJSON(w, http.StatusOK, nil)
 }
