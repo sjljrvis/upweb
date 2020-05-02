@@ -54,7 +54,7 @@ const checkForBuildFile = (callback) => {
     callback(true);
   } else {
     console.log(`------> .dnow.yml file not found for the project `)
-    console.log(`------> Using default build-pack as nodeJS for project`)
+    console.log(`------> Using default build-pack as nodeJS for the project`)
     callback(true)
   }
 }

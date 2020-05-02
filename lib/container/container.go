@@ -68,8 +68,9 @@ func Create(image string, port int, variables []string) string {
 		HostIP:   "0.0.0.0",
 		HostPort: portString,
 	}
+
 	portBinding := nat.PortMap{
-		nat.Port(portString + "/tcp"): []nat.PortBinding{hostBinding},
+		nat.Port("80/tcp"): []nat.PortBinding{hostBinding},
 	}
 
 	envs := append(variables, "PORT="+portString)
@@ -77,7 +78,7 @@ func Create(image string, port int, variables []string) string {
 	containerConfig := &container.Config{
 		Image: image,
 		ExposedPorts: nat.PortSet{
-			nat.Port(portString + "/tcp"): struct{}{},
+			nat.Port("80/tcp"): struct{}{},
 		},
 		Env: envs,
 	}

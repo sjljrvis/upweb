@@ -49,7 +49,7 @@ func AccessToken(code, state string) accessToken {
 
 func Profile(token string) []byte {
 	url := "https://api.github.com/user?access_token=" + token
-
+	
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("Accept", "application/json")
 
