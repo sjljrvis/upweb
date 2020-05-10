@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	// "github.com/gorilla/mux"
+	checkmail "github.com/badoux/checkmail"
 	. "github.com/sjljrvis/deploynow/db"
 	Helper "github.com/sjljrvis/deploynow/helpers"
 	github "github.com/sjljrvis/deploynow/lib/github"
@@ -53,6 +54,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
+	err := checkmail.ValidateHost(user.Email)
+	if _, ok := err.(checkmail.SmtpError); ok && err != nil {
+		Helper.RespondWithError(w, 400, "Please check if email exists")
+		return
+	}
+
+	Helper.VerificationEmail(user.Email)
+
 	if err := DB.Save(&user).Error; err != nil {
 		Helper.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return

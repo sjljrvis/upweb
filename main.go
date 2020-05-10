@@ -23,7 +23,6 @@ func init() {
 
 func main() {
 	DB.Init()
-	// Helper.VerificationEmail()
 	r := router.NewRouter()
 	r.Use(router.LoggingMiddleware)
 

@@ -18,6 +18,7 @@ type User struct {
 	Email         string `gorm:"unique" json:"email"`
 	Password      string `json:"password"`
 	MD5           string `json:"password_md5"`
+	Verified      bool   `json:"verified" gorm:"default:false"`
 	Repositories  []Repository
 	GithubAccount GithubAccount
 }
