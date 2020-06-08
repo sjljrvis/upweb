@@ -20,7 +20,6 @@ import (
 	"github.com/sjljrvis/deploynow/log"
 	models "github.com/sjljrvis/deploynow/models"
 
-	// "github.com/gorilla/mux"
 	. "github.com/sjljrvis/deploynow/db"
 )
 
@@ -109,7 +108,7 @@ func BuildFromGithub(w http.ResponseWriter, r *http.Request) {
 	go buildContainerFromGithub(repository, "node", buildlogChannel)
 	for {
 		data := <-buildlogChannel
-		fmt.Fprintf(w, "data: %s\n\n", string(data)+"\n\n")
+		fmt.Fprintf(w, "data: %s\n", string(data))
 		flusher.Flush()
 	}
 }
@@ -232,21 +231,13 @@ func buildContainerFromGithub(repository models.Repository, build_pack string, b
 	variables := []models.Variable{}
 	envs := []string{}
 	appication_url := fmt.Sprintf("------> https://%s.upweb.io", repository.RepositoryName)
-	buildlogChannel <- []byte("------> Cleaning workspace\n\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("------> Cleaning workspace")
+
 	fs.RemoveDir(repository.PathDocker)
 	fs.CreateDir(repository.PathDocker)
-	buildlogChannel <- []byte("------> Re-Initializing workspace \n\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("------> Cloning code from github\n")
+	buildlogChannel <- []byte("------> Re-Initializing workspace")
+	buildlogChannel <- []byte("------> Cloning code from github")
 	git.Clone(repository.PathDocker, repository.GithubURL)
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
 
 	if repository.ContainerID != "" {
 		log.Info().Msgf("[BUILD] stopping container %s", repository.ContainerID)
@@ -254,29 +245,27 @@ func buildContainerFromGithub(repository models.Repository, build_pack string, b
 		container.Remove(repository.ContainerID)
 	}
 
-	buildlogChannel <- []byte("------> Get application settings | variables \n")
-	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("------> Get application settings | variables")
 	buildlogChannel <- []byte(fmt.Sprintf("        Using BUILD_PACK as %s", build_pack))
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
 
 	DB.Find(&repository).Related(&variables)
 	port, err := freeport.GetFreePort()
 
-	buildlogChannel <- []byte("------> Creating application runtime \n")
-	buildlogChannel <- []byte("\n")
+	log.Info().Msgf("[BUILD] stopping container %s", repository.ContainerID)
+
+	if container.Exits(repository.ContainerID) {
+		container.Stop(repository.ContainerID)
+		container.Remove(repository.ContainerID)
+	}
+
+	buildlogChannel <- []byte("------> Creating application runtime")
 	buildlogChannel <- []byte("        [PORT] will be set as environment variable dynamically \n")
-	buildlogChannel <- []byte("\n")
 
 	for _, v := range variables {
 		vars := fmt.Sprintf("         %s=%s \n", v.Key, v.Value)
 		envs = append(envs, fmt.Sprintf("%s=%s", v.Key, v.Value))
 		buildlogChannel <- []byte(vars)
 	}
-
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
 
 	buildlogChannel <- []byte("------> Installing Dependencies \n")
 	start_time := time.Now()
@@ -293,25 +282,19 @@ func buildContainerFromGithub(repository models.Repository, build_pack string, b
 	end_time := time.Since(start_time)
 	time_diff := float32(end_time / time.Second)
 	buildlogChannel <- []byte(fmt.Sprintf("        took %.2f seconds", time_diff))
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
 	buildlogChannel <- []byte("------> Building Dependencies \n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
 
 	log.Info().Msg("[BUILD ]Building Docker Container")
 	containerID := container.Create(repository.RepositoryName, port, envs)
 	nginx.WriteConfig(repository.RepositoryName, strconv.Itoa(port))
-	nginx.Reload()
+	// nginx.Reload()
 	log.Info().Msgf("Building Docker Container ... done %s", containerID)
 
-	buildlogChannel <- []byte("------> Build succeeded! \n")
-	buildlogChannel <- []byte("\n")
-	buildlogChannel <- []byte("\n")
+	buildlogChannel <- []byte("------> Build succeeded!")
 
 	repository.ContainerID = containerID
-	DB.Save(repository)
-	buildlogChannel <- []byte("------> Launching... \n")
+	go DB.Save(repository)
+	buildlogChannel <- []byte("------> Launching...")
 	buildlogChannel <- []byte("------> Application deployed on upweb")
 	buildlogChannel <- []byte(appication_url)
 	buildlogChannel <- []byte("EOF")

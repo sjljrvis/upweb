@@ -15,6 +15,23 @@ import (
 	"github.com/sjljrvis/deploynow/log"
 )
 
+func Exits(id string) bool {
+	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error().Msgf("Unable to create docker client")
+	}
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	if err != nil {
+		log.Error().Msgf("Unable to list docker container", err.Error())
+	}
+	for _, container := range containers {
+		if id == container.ID {
+			return true
+		}
+	}
+	return false
+}
+
 // GenerateDefault will spin up default container
 func GenerateDefault(name string, port int) string {
 	imageName := "dnow-default"
@@ -70,7 +87,7 @@ func Create(image string, port int, variables []string) string {
 	}
 
 	portBinding := nat.PortMap{
-		nat.Port("80/tcp"): []nat.PortBinding{hostBinding},
+		nat.Port(portString + "/tcp"): []nat.PortBinding{hostBinding},
 	}
 
 	envs := append(variables, "PORT="+portString)
@@ -78,7 +95,7 @@ func Create(image string, port int, variables []string) string {
 	containerConfig := &container.Config{
 		Image: image,
 		ExposedPorts: nat.PortSet{
-			nat.Port("80/tcp"): struct{}{},
+			nat.Port(portString + "/tcp"): struct{}{},
 		},
 		Env: envs,
 	}

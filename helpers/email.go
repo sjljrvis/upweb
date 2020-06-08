@@ -28,7 +28,5 @@ func VerificationEmail(to string) {
 	}
 
 	result := tpl.String()
-	fmt.Println(result)
-	fmt.Println(data)
 	sendgrid.SendEmail(to, "sejal@upweb.io", "Verify your upweb account", result)
 }

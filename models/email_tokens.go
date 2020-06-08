@@ -7,5 +7,5 @@ import (
 type EmailToken struct {
 	Base
 	UserID uint `json:"user_id"`
-	status bool `json:"status"`
+	Status bool `json:"status"`
 }
