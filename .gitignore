@@ -6,4 +6,5 @@ vendor/
 
 tmp/
 
-*/*.env
+configs/.production.env
+configs/.development.env
